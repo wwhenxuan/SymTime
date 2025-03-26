@@ -13,14 +13,16 @@ from typing import Optional
 class Flatten_Heads(nn.Module):
     """Integrate the final output of the time series encoder"""
 
-    def __init__(self,
-                 individual: bool,
-                 n_vars: int,
-                 nf: int,
-                 patch_num: int,
-                 targets_window: int,
-                 head_dropout: int = 0,
-                 cls_token: Optional[bool] = True) -> None:
+    def __init__(
+        self,
+        individual: bool,
+        n_vars: int,
+        nf: int,
+        patch_num: int,
+        targets_window: int,
+        head_dropout: int = 0,
+        cls_token: Optional[bool] = True,
+    ) -> None:
         super().__init__()
         # Whether to output in a channel-independent manner
         self.individual = individual

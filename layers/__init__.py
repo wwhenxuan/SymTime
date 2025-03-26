@@ -14,4 +14,3 @@ from .ts_encoder import TSTEncoder
 from .sym_encoder import LLM
 
 from .flatten_heads import Flatten_Heads
-

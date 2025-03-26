@@ -13,11 +13,13 @@ from typing import Tuple, Any
 class LLM(nn.Module):
     """Building LLMs as a general interface for symbolic encoders"""
 
-    def __init__(self,
-                 llm_name: str = "DistilBert",
-                 llm_layers: int = 6,
-                 hidden_size: int = 768,
-                 freeze_layers: int = 3) -> None:
+    def __init__(
+        self,
+        llm_name: str = "DistilBert",
+        llm_layers: int = 6,
+        hidden_size: int = 768,
+        freeze_layers: int = 3,
+    ) -> None:
         super(LLM, self).__init__()
         # Get information about the LLM
         self.llm_name = llm_name
@@ -60,27 +62,27 @@ class LLM(nn.Module):
                 "distilbert-base-uncased",
                 # torch_dtype=torch.float16,
                 local_files_only=True,
-                config=config
+                config=config,
             )
         except EnvironmentError:
             # try to download the pretrained params
-            print(f"{self.llm_name} not found locally, trying to load from the network...")
+            print(
+                f"{self.llm_name} not found locally, trying to load from the network..."
+            )
             llm = DistilBertForMaskedLM.from_pretrained(
                 "distilbert-base-uncased",
                 # torch_dtype=torch.float16,
                 local_files_only=False,
-                config=config
+                config=config,
             )
         try:
             # try to load the tokenizer from local device
             tokenizer = DistilBertTokenizer.from_pretrained(
-                "distilbert-base-uncased",
-                local_files_only=True
+                "distilbert-base-uncased", local_files_only=True
             )
         except EnvironmentError:
             # try to download the tokenizer
             tokenizer = DistilBertTokenizer.from_pretrained(
-                "distilbert-base-uncased",
-                local_files_only=False
+                "distilbert-base-uncased", local_files_only=False
             )
         return llm, tokenizer

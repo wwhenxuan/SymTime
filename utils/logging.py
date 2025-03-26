@@ -28,15 +28,26 @@ class Logging(object):
         # 获得logging的数据字典和具体的方法
         self.dict, self.logging_epoch = self.init_logging()
         # 创建一个可以写入的TXT文件
-        self.text = create_txt_file(file_path=self.logging_path, file_name="pretrain.txt")
+        self.text = create_txt_file(
+            file_path=self.logging_path, file_name="pretrain.txt"
+        )
 
     def init_logging(self) -> Tuple[Dict, Callable]:
         """根据训练类型返回对应形式的字典和方法"""
         # 如果是预训练
-        return {"time": [], "epoch": [], "loss": [], "loss_mtm": [], "loss_mlm": [],
-                "loss_t2s": [], "loss_s2t": []}, self.logging_pretrain
+        return {
+            "time": [],
+            "epoch": [],
+            "loss": [],
+            "loss_mtm": [],
+            "loss_mlm": [],
+            "loss_t2s": [],
+            "loss_s2t": [],
+        }, self.logging_pretrain
 
-    def logging_pretrain(self, epoch: int, loss: float, loss_mtm, loss_mlm, loss_t2s, loss_s2t) -> None:
+    def logging_pretrain(
+        self, epoch: int, loss: float, loss_mtm, loss_mlm, loss_t2s, loss_s2t
+    ) -> None:
         """logging预训练模型的训练过程"""
         self.dict["time"].append(time_now())  # 获取当前时间
         self.dict["epoch"].append(epoch)  # 添加当前训练的Epoch
@@ -47,7 +58,9 @@ class Logging(object):
         self.dict["loss_s2t"].append(loss_s2t)
         self.logging_txt(epoch, loss, loss_mtm, loss_mlm, loss_t2s, loss_s2t)
 
-    def logging_txt(self, epoch: int, loss: float, loss_mtm, loss_mlm, loss_t2s, loss_s2t) -> None:
+    def logging_txt(
+        self, epoch: int, loss: float, loss_mtm, loss_mlm, loss_t2s, loss_s2t
+    ) -> None:
         """写入txt"""
         content = f"epoch={epoch}, loss={loss}, loss_mtm={loss_mtm}, loss_mlm={loss_mlm}, loss_t2s={loss_t2s}, loss_s2t={loss_s2t}"
         write_to_txt(file_path=self.text, content=content)
@@ -62,10 +75,30 @@ class Logging(object):
         fig, ax = plt.subplots(figsize=(10, 4))
         if self.is_pretrain is True:
             # ax.plot(self.dict["epoch"], self.dict["loss"], color='royalblue', label='loss')
-            ax.plot(self.dict["epoch"], self.dict["loss_mtm"], color="tomato", label="loss_mtm")
-            ax.plot(self.dict["epoch"], self.dict["loss_mlm"], color="royalblue", label="loss_mlm")
-            ax.plot(self.dict["epoch"], self.dict["loss_t2s"], color="#6FAE45", label="loss_t2s")
-            ax.plot(self.dict["epoch"], self.dict["loss_s2t"], color="darkorange", label="loss_s2t")
+            ax.plot(
+                self.dict["epoch"],
+                self.dict["loss_mtm"],
+                color="tomato",
+                label="loss_mtm",
+            )
+            ax.plot(
+                self.dict["epoch"],
+                self.dict["loss_mlm"],
+                color="royalblue",
+                label="loss_mlm",
+            )
+            ax.plot(
+                self.dict["epoch"],
+                self.dict["loss_t2s"],
+                color="#6FAE45",
+                label="loss_t2s",
+            )
+            ax.plot(
+                self.dict["epoch"],
+                self.dict["loss_s2t"],
+                color="darkorange",
+                label="loss_s2t",
+            )
             ax.set_xlabel("num_epoch", fontsize=16)
             ax.set_ylabel("loss", fontsize=16)
             ax.legend(loc="best", fontsize=15)
@@ -74,12 +107,34 @@ class Logging(object):
             ax.set_xlabel("num_epoch", fontsize=16)
             ax.set_ylabel("loss", fontsize=16)
             ax_twinx.set_ylabel("metric", fontsize=16)
-            ax.plot(self.dict["epoch"], self.dict["train_loss"], color="royalblue", label="Train Loss")
-            ax.plot(self.dict["epoch"], self.dict["test_loss"], color="tomato", label="Test Loss")
+            ax.plot(
+                self.dict["epoch"],
+                self.dict["train_loss"],
+                color="royalblue",
+                label="Train Loss",
+            )
+            ax.plot(
+                self.dict["epoch"],
+                self.dict["test_loss"],
+                color="tomato",
+                label="Test Loss",
+            )
             ax.legend(loc="best", fontsize=15)
-            ax_twinx.plot(self.dict["epoch"], self.dict["train_metric"], color="royalblue", label="Train Metric")
-            ax_twinx.plot(self.dict["epoch"], self.dict["test_metric"], color="tomato", label="Test Metric")
-        fig.savefig(path.join(self.logging_path, "plot.jpg"), bbox_inches='tight', dpi=900)
+            ax_twinx.plot(
+                self.dict["epoch"],
+                self.dict["train_metric"],
+                color="royalblue",
+                label="Train Metric",
+            )
+            ax_twinx.plot(
+                self.dict["epoch"],
+                self.dict["test_metric"],
+                color="tomato",
+                label="Test Metric",
+            )
+        fig.savefig(
+            path.join(self.logging_path, "plot.jpg"), bbox_inches="tight", dpi=900
+        )
 
 
 def create_txt_file(file_path, file_name):
@@ -93,12 +148,12 @@ def create_txt_file(file_path, file_name):
     # 完整的文件路径
     full_file_path = os.path.join(file_path, file_name)
     # 创建并打开文件
-    with open(full_file_path, 'w', encoding="utf-8") as file:
+    with open(full_file_path, "w", encoding="utf-8") as file:
         pass  # 创建文件，不需要写入任何内容
     return full_file_path
 
 
-def write_to_txt(file_path, content, mode='a'):
+def write_to_txt(file_path, content, mode="a"):
     """
     根据传入的参数内容向Txt文件中写入内容。
     :param file_path: 文件的完整路径
@@ -106,4 +161,4 @@ def write_to_txt(file_path, content, mode='a'):
     :param mode: 写入模式，默认为'a'（追加模式），如果为'w'则覆盖原有内容
     """
     with open(file_path, mode, encoding="utf-8") as file:
-        file.write(content + '\n')  # 写入内容，并在末尾添加换行符
+        file.write(content + "\n")  # 写入内容，并在末尾添加换行符

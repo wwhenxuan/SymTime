@@ -5,7 +5,7 @@ from sklearn.metrics import precision_recall_fscore_support
 from sklearn.metrics import accuracy_score
 import torch.multiprocessing
 
-torch.multiprocessing.set_sharing_strategy('file_system')
+torch.multiprocessing.set_sharing_strategy("file_system")
 import torch
 import torch.nn as nn
 from torch import optim
@@ -14,7 +14,7 @@ import time
 import warnings
 import numpy as np
 
-warnings.filterwarnings('ignore')
+warnings.filterwarnings("ignore")
 
 
 class Exp_Anomaly_Detection(Exp_Basic):
@@ -42,7 +42,7 @@ class Exp_Anomaly_Detection(Exp_Basic):
 
                 outputs = self.model(batch_x)
 
-                f_dim = -1 if self.args.features == 'MS' else 0
+                f_dim = -1 if self.args.features == "MS" else 0
                 outputs = outputs[:, :, f_dim:]
                 pred = outputs.detach().cpu()
                 true = batch_x.detach().cpu()
@@ -54,9 +54,9 @@ class Exp_Anomaly_Detection(Exp_Basic):
         return total_loss
 
     def train(self, setting):
-        train_data, train_loader = self._get_data(flag='train')
-        vali_data, vali_loader = self._get_data(flag='val')
-        test_data, test_loader = self._get_data(flag='test')
+        train_data, train_loader = self._get_data(flag="train")
+        vali_data, vali_loader = self._get_data(flag="val")
+        test_data, test_loader = self._get_data(flag="test")
 
         path = os.path.join(self.args.checkpoints, setting)
         if not os.path.exists(path):
@@ -84,16 +84,26 @@ class Exp_Anomaly_Detection(Exp_Basic):
 
                 outputs = self.model(batch_x)
 
-                f_dim = -1 if self.args.features == 'MS' else 0
+                f_dim = -1 if self.args.features == "MS" else 0
                 outputs = outputs[:, :, f_dim:]
                 loss = criterion(outputs, batch_x)
                 train_loss.append(loss.item())
 
                 if (i + 1) % 100 == 0:
-                    print("\titers: {0}, epoch: {1} | loss: {2:.7f}".format(i + 1, epoch + 1, loss.item()))
+                    print(
+                        "\titers: {0}, epoch: {1} | loss: {2:.7f}".format(
+                            i + 1, epoch + 1, loss.item()
+                        )
+                    )
                     speed = (time.time() - time_now) / iter_count
-                    left_time = speed * ((self.args.train_epochs - epoch) * train_steps - i)
-                    print('\tspeed: {:.4f}s/iter; left time: {:.4f}s'.format(speed, left_time))
+                    left_time = speed * (
+                        (self.args.train_epochs - epoch) * train_steps - i
+                    )
+                    print(
+                        "\tspeed: {:.4f}s/iter; left time: {:.4f}s".format(
+                            speed, left_time
+                        )
+                    )
                     iter_count = 0
                     time_now = time.time()
 
@@ -105,28 +115,33 @@ class Exp_Anomaly_Detection(Exp_Basic):
             vali_loss = self.vali(vali_data, vali_loader, criterion)
             test_loss = self.vali(test_data, test_loader, criterion)
 
-            print("Epoch: {0}, Steps: {1} | Train Loss: {2:.7f} Vali Loss: {3:.7f} Test Loss: {4:.7f}".format(
-                epoch + 1, train_steps, train_loss, vali_loss, test_loss))
+            print(
+                "Epoch: {0}, Steps: {1} | Train Loss: {2:.7f} Vali Loss: {3:.7f} Test Loss: {4:.7f}".format(
+                    epoch + 1, train_steps, train_loss, vali_loss, test_loss
+                )
+            )
             early_stopping(vali_loss, self.model, path)
             if early_stopping.early_stop:
                 print("Early stopping")
                 break
             adjust_learning_rate(model_optim, epoch + 1, self.args)
 
-        best_model_path = path + '/' + 'checkpoint.pth'
+        best_model_path = path + "/" + "checkpoint.pth"
         self.model.load_state_dict(torch.load(best_model_path))
 
         return self.model
 
     def test(self, setting, test=0):
-        test_data, test_loader = self._get_data(flag='test')
-        train_data, train_loader = self._get_data(flag='train')
+        test_data, test_loader = self._get_data(flag="test")
+        train_data, train_loader = self._get_data(flag="train")
         if test:
-            print('loading model')
-            self.model.load_state_dict(torch.load(os.path.join('./checkpoints/' + setting, 'checkpoint.pth')))
+            print("loading model")
+            self.model.load_state_dict(
+                torch.load(os.path.join("./checkpoints/" + setting, "checkpoint.pth"))
+            )
 
         attens_energy = []
-        folder_path = './test_results/' + setting + '/'
+        folder_path = "./test_results/" + setting + "/"
         if not os.path.exists(folder_path):
             os.makedirs(folder_path)
 
@@ -184,17 +199,23 @@ class Exp_Anomaly_Detection(Exp_Basic):
         print("gt:   ", gt.shape)
 
         accuracy = accuracy_score(gt, pred)
-        precision, recall, f_score, support = precision_recall_fscore_support(gt, pred, average='binary')
-        print("Accuracy : {:0.4f}, Precision : {:0.4f}, Recall : {:0.4f}, F-score : {:0.4f} ".format(
-            accuracy, precision,
-            recall, f_score))
+        precision, recall, f_score, support = precision_recall_fscore_support(
+            gt, pred, average="binary"
+        )
+        print(
+            "Accuracy : {:0.4f}, Precision : {:0.4f}, Recall : {:0.4f}, F-score : {:0.4f} ".format(
+                accuracy, precision, recall, f_score
+            )
+        )
 
-        f = open("result_anomaly_detection.txt", 'a')
+        f = open("result_anomaly_detection.txt", "a")
         f.write(setting + "  \n")
-        f.write("Accuracy : {:0.4f}, Precision : {:0.4f}, Recall : {:0.4f}, F-score : {:0.4f} ".format(
-            accuracy, precision,
-            recall, f_score))
-        f.write('\n')
-        f.write('\n')
+        f.write(
+            "Accuracy : {:0.4f}, Precision : {:0.4f}, Recall : {:0.4f}, F-score : {:0.4f} ".format(
+                accuracy, precision, recall, f_score
+            )
+        )
+        f.write("\n")
+        f.write("\n")
         f.close()
         return

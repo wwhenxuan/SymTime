@@ -15,16 +15,14 @@ def get_tokenizer(llm_name: str = "DistilBert") -> Any:
         try:
             # 先尝试从本地加载
             tokenizer = DistilBertTokenizer.from_pretrained(
-                "distilbert-base-uncased",
-                trust_remote_code=True,
-                local_files_only=True
+                "distilbert-base-uncased", trust_remote_code=True, local_files_only=True
             )
         except EnvironmentError:
             # 如果本地不存在则尝试从网络中请求下载
             tokenizer = DistilBertTokenizer.from_pretrained(
                 "distilbert-base-uncased",
                 trust_remote_code=True,
-                local_files_only=False
+                local_files_only=False,
             )
     elif llm_name == "Bert":
         try:
@@ -32,29 +30,25 @@ def get_tokenizer(llm_name: str = "DistilBert") -> Any:
             tokenizer = BertTokenizer.from_pretrained(
                 "google-bert/bert-base-uncased",
                 trust_remote_code=True,
-                local_files_only=True
+                local_files_only=True,
             )
         except EnvironmentError:
             # 如果本地不存在则尝试从网络中请求下载
             tokenizer = BertTokenizer.from_pretrained(
                 "google-bert/bert-base-uncased",
                 trust_remote_code=True,
-                local_files_only=False
+                local_files_only=False,
             )
-    elif llm_name == 'GPT2':
+    elif llm_name == "GPT2":
         try:
             # 先尝试从本地加载
             tokenizer = GPT2Tokenizer.from_pretrained(
-                "openai-community/gpt2",
-                trust_remote_code=True,
-                local_files_only=True
+                "openai-community/gpt2", trust_remote_code=True, local_files_only=True
             )
         except EnvironmentError:
             # 如果本地不存在则尝试从网络中请求下载
             tokenizer = GPT2Tokenizer.from_pretrained(
-                "openai-community/gpt2",
-                trust_remote_code=True,
-                local_files_only=False
+                "openai-community/gpt2", trust_remote_code=True, local_files_only=False
             )
     else:
         # 使用大模型的名称输入错误

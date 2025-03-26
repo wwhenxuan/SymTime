@@ -26,11 +26,7 @@ class Transpose(nn.Module):
 
 def get_batch_norm(d_model: int) -> nn.Module:
     """Get the BatchNorm module for processing the attention mechanism"""
-    return nn.Sequential(
-        Transpose(1, 2),
-        nn.BatchNorm1d(d_model),
-        Transpose(1, 2)
-    )
+    return nn.Sequential(Transpose(1, 2), nn.BatchNorm1d(d_model), Transpose(1, 2))
 
 
 def get_activation_fn(activation: str) -> nn.Module:
@@ -41,7 +37,9 @@ def get_activation_fn(activation: str) -> nn.Module:
         return nn.ReLU()
     elif activation.lower() == "gelu":
         return nn.GELU()
-    raise ValueError(f'{activation} is not available. You can use "relu", "gelu", or a callable')
+    raise ValueError(
+        f'{activation} is not available. You can use "relu", "gelu", or a callable'
+    )
 
 
 class moving_avg(nn.Module):
@@ -73,4 +71,3 @@ class series_decomp(nn.Module):
         moving_mean = self.moving_avg(x)
         res = x - moving_mean
         return res, moving_mean
-

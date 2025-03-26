@@ -13,7 +13,7 @@ class Exp_Basic(object):
         self.model = self._build_model().to(self.device)
 
     def _build_model(self):
-        with open('./configs/SymTime_base.yaml', 'r', encoding='utf-8') as file:
+        with open("./configs/SymTime_base.yaml", "r", encoding="utf-8") as file:
             configs = yaml.safe_load(file)
         model = SymTime(args=self.args, configs=configs).float()
         if self.args.use_multi_gpu and self.args.use_gpu:
@@ -22,13 +22,14 @@ class Exp_Basic(object):
 
     def _acquire_device(self):
         if self.args.use_gpu:
-            os.environ["CUDA_VISIBLE_DEVICES"] = str(
-                self.args.gpu) if not self.args.use_multi_gpu else self.args.devices
-            device = torch.device('cuda:{}'.format(self.args.gpu))
-            print('Use GPU: cuda:{}'.format(self.args.gpu))
+            os.environ["CUDA_VISIBLE_DEVICES"] = (
+                str(self.args.gpu) if not self.args.use_multi_gpu else self.args.devices
+            )
+            device = torch.device("cuda:{}".format(self.args.gpu))
+            print("Use GPU: cuda:{}".format(self.args.gpu))
         else:
-            device = torch.device('cpu')
-            print('Use CPU')
+            device = torch.device("cpu")
+            print("Use CPU")
         return device
 
     def _get_data(self):
@@ -42,4 +43,3 @@ class Exp_Basic(object):
 
     def test(self):
         pass
-

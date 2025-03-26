@@ -49,17 +49,19 @@ class SymTime(nn.Module):
         self.out_dropout = args.out_dropout
 
         # 创建时间序列数据的编码器
-        self.time_encoder = TSTEncoder(patch_len=self.patch_len,
-                                       n_layers=self.n_layers,
-                                       d_model=self.d_model,
-                                       n_heads=self.n_heads,
-                                       d_ff=self.d_ff,
-                                       norm=configs["norm"],
-                                       attn_dropout=configs["attn_dropout"],
-                                       dropout=configs["dropout"],
-                                       act=configs["act"],
-                                       pre_norm=configs["pre_norm"],
-                                       forward_layers=self.forward_layers)
+        self.time_encoder = TSTEncoder(
+            patch_len=self.patch_len,
+            n_layers=self.n_layers,
+            d_model=self.d_model,
+            n_heads=self.n_heads,
+            d_ff=self.d_ff,
+            norm=configs["norm"],
+            attn_dropout=configs["attn_dropout"],
+            dropout=configs["dropout"],
+            act=configs["act"],
+            pre_norm=configs["pre_norm"],
+            forward_layers=self.forward_layers,
+        )
         self.load_pretrained()
 
         # freeze some Transformer layers in time encoder
@@ -74,42 +76,73 @@ class SymTime(nn.Module):
         if self.use_avg is True:
             self.decompsition = series_decomp(kernel_size=args.moving_avg)
             # trend projection alone
-            self.projection_trend = nn.Linear(in_features=self.seq_len,
-                                              out_features=args.pred_len if "forecast" in self.task_name else self.seq_len)
+            self.projection_trend = nn.Linear(
+                in_features=self.seq_len,
+                out_features=(
+                    args.pred_len if "forecast" in self.task_name else self.seq_len
+                ),
+            )
 
-        if self.task_name == "long_term_forecast" or self.task_name == "short_term_forecast":
-            self.flatten_head = Flatten_Heads(individual=self.individual,
-                                              n_vars=args.enc_in, patch_num=self.patch_num,
-                                              nf=self.d_model, targets_window=args.pred_len,
-                                              head_dropout=self.out_dropout)
+        if (
+            self.task_name == "long_term_forecast"
+            or self.task_name == "short_term_forecast"
+        ):
+            self.flatten_head = Flatten_Heads(
+                individual=self.individual,
+                n_vars=args.enc_in,
+                patch_num=self.patch_num,
+                nf=self.d_model,
+                targets_window=args.pred_len,
+                head_dropout=self.out_dropout,
+            )
         elif self.task_name == "classification":
             if args.conv1d is True:
-                self.conv1d = nn.Conv1d(in_channels=args.enc_in,
-                                        out_channels=args.out_channels,
-                                        kernel_size=(3,), stride=(1,), padding=1)
+                self.conv1d = nn.Conv1d(
+                    in_channels=args.enc_in,
+                    out_channels=args.out_channels,
+                    kernel_size=(3,),
+                    stride=(1,),
+                    padding=1,
+                )
                 args.enc_in = args.out_channels
                 self.use_conv1d = True
             else:
                 self.use_conv1d = False
             self.act = nn.GELU()
-            self.ln_proj = nn.LayerNorm(self.d_model * (self.patch_num * args.enc_in + 1))
-            self.classifier = nn.Linear(in_features=self.d_model * (self.patch_num * args.enc_in + 1),
-                                        out_features=args.num_classes)
+            self.ln_proj = nn.LayerNorm(
+                self.d_model * (self.patch_num * args.enc_in + 1)
+            )
+            self.classifier = nn.Linear(
+                in_features=self.d_model * (self.patch_num * args.enc_in + 1),
+                out_features=args.num_classes,
+            )
         elif self.task_name == "anomaly_detection":
-            self.flatten_head = Flatten_Heads(individual=self.individual,
-                                              n_vars=args.enc_in, patch_num=self.patch_num,
-                                              nf=self.d_model, targets_window=self.seq_len,
-                                              head_dropout=self.out_dropout)
+            self.flatten_head = Flatten_Heads(
+                individual=self.individual,
+                n_vars=args.enc_in,
+                patch_num=self.patch_num,
+                nf=self.d_model,
+                targets_window=self.seq_len,
+                head_dropout=self.out_dropout,
+            )
         elif self.task_name == "imputation":
-            self.flatten_head = Flatten_Heads(individual=self.individual,
-                                              n_vars=args.enc_in, patch_num=self.patch_num,
-                                              nf=self.d_model, targets_window=self.seq_len,
-                                              head_dropout=self.out_dropout, cls_token=True)
+            self.flatten_head = Flatten_Heads(
+                individual=self.individual,
+                n_vars=args.enc_in,
+                patch_num=self.patch_num,
+                nf=self.d_model,
+                targets_window=self.seq_len,
+                head_dropout=self.out_dropout,
+                cls_token=True,
+            )
         else:
             raise ValueError("task name wrong!")
 
     def forward(self, x_enc: Tensor) -> Tensor:
-        if self.task_name == "long_term_forecast" or self.task_name == "short_term_forecast":
+        if (
+            self.task_name == "long_term_forecast"
+            or self.task_name == "short_term_forecast"
+        ):
             x_dec = self.forcast(x_enc=x_enc)
         elif self.task_name == "classification":
             x_dec = self.classification(x_enc=x_enc)
@@ -124,8 +157,7 @@ class SymTime(nn.Module):
         # Normalization from Non-stationary Transformer
         means = x_enc.mean(1, keepdim=True).detach()
         x_enc = x_enc - means
-        stdev = torch.sqrt(
-            torch.var(x_enc, dim=1, keepdim=True, unbiased=False) + 1e-5)
+        stdev = torch.sqrt(torch.var(x_enc, dim=1, keepdim=True, unbiased=False) + 1e-5)
         x_enc /= stdev
 
         # time series decompsition
@@ -146,8 +178,12 @@ class SymTime(nn.Module):
         x_enc = torch.reshape(x_enc, [batch_size * num_vars, patch_num, patch_len])
         x_dec = self.time_encoder(x_enc)
         # 从通道独立恢复为原来的输入形式
-        x_dec = torch.reshape(x_dec, [batch_size, num_vars, x_dec.shape[-2], x_dec.shape[-1]])
-        x_dec = self.flatten_head(x_dec).permute(0, 2, 1)  # [batch_size, pred_len, num_vars]
+        x_dec = torch.reshape(
+            x_dec, [batch_size, num_vars, x_dec.shape[-2], x_dec.shape[-1]]
+        )
+        x_dec = self.flatten_head(x_dec).permute(
+            0, 2, 1
+        )  # [batch_size, pred_len, num_vars]
 
         # add the trend part of the decompsition
         if self.use_avg is True:
@@ -175,7 +211,9 @@ class SymTime(nn.Module):
         x_enc = self.patching(ts=x_enc)  # [batch_size, num_vars, patch_num, patch_len]
         batch_size, num_vars, patch_num, patch_len = x_enc.size()
         # Learning feature through the backbone of Transformer
-        x_enc = torch.reshape(x_enc, shape=(batch_size, num_vars * patch_num, patch_len))
+        x_enc = torch.reshape(
+            x_enc, shape=(batch_size, num_vars * patch_num, patch_len)
+        )
         x_dec = self.time_encoder(x_enc)
         # Output processing
         x_dec = self.act(x_dec)
@@ -192,17 +230,29 @@ class SymTime(nn.Module):
         interpolated_x_enc = np.copy(x_enc_np)
         for sample_idx, time_idx, channel_idx in zip(*zero_indices):
             non_zero_indices = np.nonzero(x_enc_np[sample_idx, :, channel_idx])[0]
-            before_non_zero_idx = non_zero_indices[non_zero_indices < time_idx][-1] if len(
-                non_zero_indices[non_zero_indices < time_idx]) > 0 else None
-            after_non_zero_idx = non_zero_indices[non_zero_indices > time_idx][0] if len(
-                non_zero_indices[non_zero_indices > time_idx]) > 0 else None
+            before_non_zero_idx = (
+                non_zero_indices[non_zero_indices < time_idx][-1]
+                if len(non_zero_indices[non_zero_indices < time_idx]) > 0
+                else None
+            )
+            after_non_zero_idx = (
+                non_zero_indices[non_zero_indices > time_idx][0]
+                if len(non_zero_indices[non_zero_indices > time_idx]) > 0
+                else None
+            )
             if before_non_zero_idx is not None and after_non_zero_idx is not None:
-                interpolated_value = (x_enc_np[sample_idx, before_non_zero_idx, channel_idx] + x_enc_np[
-                    sample_idx, after_non_zero_idx, channel_idx]) / 2
+                interpolated_value = (
+                    x_enc_np[sample_idx, before_non_zero_idx, channel_idx]
+                    + x_enc_np[sample_idx, after_non_zero_idx, channel_idx]
+                ) / 2
             elif before_non_zero_idx is None:
-                interpolated_value = x_enc_np[sample_idx, after_non_zero_idx, channel_idx]
+                interpolated_value = x_enc_np[
+                    sample_idx, after_non_zero_idx, channel_idx
+                ]
             elif after_non_zero_idx is None:
-                interpolated_value = x_enc_np[sample_idx, before_non_zero_idx, channel_idx]
+                interpolated_value = x_enc_np[
+                    sample_idx, before_non_zero_idx, channel_idx
+                ]
             interpolated_x_enc[sample_idx, time_idx, channel_idx] = interpolated_value
 
         # Normalization from Non-stationary Transformer
@@ -229,10 +279,14 @@ class SymTime(nn.Module):
         x_enc = torch.reshape(x_enc, shape=(batch_size * n_vars, patch_num, patch_len))
         # 经过大模型正向传播部分
         x_dec = self.time_encoder(x_enc)  # [batch_size * n_vars, patch_num, d_model]
-        x_dec = torch.reshape(x_dec, shape=(batch_size, n_vars, x_dec.size(-2), self.d_model))
+        x_dec = torch.reshape(
+            x_dec, shape=(batch_size, n_vars, x_dec.size(-2), self.d_model)
+        )
 
         # 恢复为模型原本的输出维度
-        x_dec = self.flatten_head(x_dec).permute(0, 2, 1)  # [batch_size, pred_len, num_vars]
+        x_dec = self.flatten_head(x_dec).permute(
+            0, 2, 1
+        )  # [batch_size, pred_len, num_vars]
 
         # add the trend part of the decompsition
         if self.use_avg is True:
@@ -248,8 +302,7 @@ class SymTime(nn.Module):
         # Normalization from Non-stationary Transformer
         means = x_enc.mean(1, keepdim=True).detach()
         x_enc = x_enc - means
-        stdev = torch.sqrt(
-            torch.var(x_enc, dim=1, keepdim=True, unbiased=False) + 1e-5)
+        stdev = torch.sqrt(torch.var(x_enc, dim=1, keepdim=True, unbiased=False) + 1e-5)
         x_enc /= stdev
 
         # time series decompsition
@@ -270,10 +323,14 @@ class SymTime(nn.Module):
         x_enc = torch.reshape(x_enc, shape=(batch_size * n_vars, patch_num, patch_len))
         # 经过大模型正向传播部分
         x_dec = self.time_encoder(x_enc)  # [batch_size * n_vars, patch_num, d_model]
-        x_dec = torch.reshape(x_dec, [batch_size, n_vars, x_dec.shape[-2], x_dec.shape[-1]])
+        x_dec = torch.reshape(
+            x_dec, [batch_size, n_vars, x_dec.shape[-2], x_dec.shape[-1]]
+        )
 
         # 恢复为模型原本的输出维度
-        x_dec = self.flatten_head(x_dec).permute(0, 2, 1)  # [batch_size, pred_len, num_vars]
+        x_dec = self.flatten_head(x_dec).permute(
+            0, 2, 1
+        )  # [batch_size, pred_len, num_vars]
 
         # add the trend part of the decompsition
         if self.use_avg is True:
@@ -295,5 +352,6 @@ class SymTime(nn.Module):
     def load_pretrained(self) -> None:
         """加载预训练模型"""
         print("Now loading pretrained model params...")
-        self.time_encoder.load_state_dict(torch.load(self.pretrain_path, weights_only=True))
-
+        self.time_encoder.load_state_dict(
+            torch.load(self.pretrain_path, weights_only=True)
+        )

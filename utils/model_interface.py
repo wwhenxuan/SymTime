@@ -28,15 +28,19 @@ class ModelInterface(object):
 
     def load_pretrain(self) -> nn.Module:
         """加载初始化的模型进行预训练"""
-        self.accelerator.print(Fore.RED + "Now is loading model" + Style.RESET_ALL, end=" -> ")
+        self.accelerator.print(
+            Fore.RED + "Now is loading model" + Style.RESET_ALL, end=" -> "
+        )
         # 获取配置文件的地址
         configs_path = path.join("configs", f"SymTime_{self.model_type}.yaml")
-        with open(configs_path, 'r', encoding='utf-8') as file:
+        with open(configs_path, "r", encoding="utf-8") as file:
             config = yaml.safe_load(file)
-        model = SymTime(config,
-                        context_window=self.args.context_window,
-                        time_mask_ratio=self.args.time_mask_ratio,
-                        sym_mask_ratio=self.args.sym_mask_ratio)
+        model = SymTime(
+            config,
+            context_window=self.args.context_window,
+            time_mask_ratio=self.args.time_mask_ratio,
+            sym_mask_ratio=self.args.sym_mask_ratio,
+        )
         self.accelerator.print(Fore.GREEN + "successfully loaded!" + Style.RESET_ALL)
         return model
 

@@ -47,7 +47,12 @@ class OptimInterface(object):
 
     def load_optimizer(self, parameters: Optional[Tensor | List]) -> Optimizer:
         """获取优化器的方法"""
-        self.accelerator.print(Fore.RED + f"Now is loading the optimizer: {self.optimizer}" + Style.RESET_ALL, end=" -> ")
+        self.accelerator.print(
+            Fore.RED
+            + f"Now is loading the optimizer: {self.optimizer}"
+            + Style.RESET_ALL,
+            end=" -> ",
+        )
         if self.optimizer == "SGD":
             # 使用随机梯度下降法
             return self.load_SGD(parameters)
@@ -60,9 +65,16 @@ class OptimInterface(object):
         else:
             raise ValueError("args.optimizer填写错误")
 
-    def load_scheduler(self, optimizer: Optimizer, loader_len: int = None) -> LRScheduler:
+    def load_scheduler(
+        self, optimizer: Optimizer, loader_len: int = None
+    ) -> LRScheduler:
         """获得动态学习率调整的方法"""
-        self.accelerator.print(Fore.RED + f"Now is loading the scheduler: {self.scheduler}" + Style.RESET_ALL, end=" -> ")
+        self.accelerator.print(
+            Fore.RED
+            + f"Now is loading the scheduler: {self.scheduler}"
+            + Style.RESET_ALL,
+            end=" -> ",
+        )
         # 如果使用的是OneCycle则自带学习率预热过程
         if self.scheduler == "OneCycle":
             return self.load_OneCycleLR(optimizer, loader_len)
@@ -79,7 +91,7 @@ class OptimInterface(object):
         return lr_scheduler.SequentialLR(
             optimizer,
             [warmup_scheduler, dynamic_scheduler],
-            milestones=[self.warmup_epochs, self.num_epochs]
+            milestones=[self.warmup_epochs, self.num_epochs],
         )
 
     def load_warmup(self, optimizer: Optimizer) -> LRScheduler:
@@ -90,7 +102,7 @@ class OptimInterface(object):
                 optimizer,
                 start_factor=0.0,
                 end_factor=1.0,
-                total_iters=self.warmup_epochs
+                total_iters=self.warmup_epochs,
             )
             self.load_successfully()
             return scheduler
@@ -99,11 +111,7 @@ class OptimInterface(object):
 
     def load_SGD(self, parameters: Tensor) -> Optimizer:
         """获得随机梯度下降优化器的方法"""
-        optimizer = optim.SGD(
-            parameters,
-            lr=self.learning_rate,
-            momentum=self.momentum
-        )
+        optimizer = optim.SGD(parameters, lr=self.learning_rate, momentum=self.momentum)
         self.load_successfully()
         return optimizer
 
@@ -115,7 +123,7 @@ class OptimInterface(object):
             betas=(self.beta1, self.beta2),
             weight_decay=self.weight_decay,
             eps=self.eps,
-            amsgrad=self.amsgrad
+            amsgrad=self.amsgrad,
         )
         self.load_successfully()
         return optimizer
@@ -128,31 +136,28 @@ class OptimInterface(object):
             betas=(self.beta1, self.beta2),
             weight_decay=self.weight_decay,
             eps=self.eps,
-            amsgrad=self.amsgrad
+            amsgrad=self.amsgrad,
         )
         self.load_successfully()
         return optimizer
 
     def load_ExponentialLR(self, optimizer: Optimizer) -> LRScheduler:
         """获得学习率指数衰减因子"""
-        scheduler = lr_scheduler.ExponentialLR(
-            optimizer,
-            gamma=self.gamma
-        )
+        scheduler = lr_scheduler.ExponentialLR(optimizer, gamma=self.gamma)
         self.load_successfully()
         return scheduler
 
     def load_StepLR(self, optimizer: Optimizer) -> LRScheduler:
         """获得StepLR每个一定的Epochs数目进行动态学习率衰减的方法"""
         scheduler = lr_scheduler.StepLR(
-            optimizer,
-            step_size=self.step_size,
-            gamma=self.gamma
+            optimizer, step_size=self.step_size, gamma=self.gamma
         )
         self.load_successfully()
         return scheduler
 
-    def load_OneCycleLR(self, optimizer: Optimizer, loader_len: int = None) -> LRScheduler:
+    def load_OneCycleLR(
+        self, optimizer: Optimizer, loader_len: int = None
+    ) -> LRScheduler:
         """获得周期性循环动态学习率调整方法"""
         scheduler = lr_scheduler.OneCycleLR(
             optimizer,

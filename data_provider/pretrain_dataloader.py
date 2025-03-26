@@ -12,7 +12,7 @@ from torch.utils.data import Dataset, DataLoader
 from typing import Optional, Dict
 import warnings
 
-warnings.filterwarnings('ignore')
+warnings.filterwarnings("ignore")
 
 
 class TSDataset(Dataset):
@@ -57,7 +57,7 @@ class PreTrainDataLoader(object):
         index = self.list[self.pointer]
         # 将数据集指针向后移动
         self.pointer = (self.pointer + 1) % len(self.list)
-        for file in os.listdir(self.data_path)[index: index + self.number]:
+        for file in os.listdir(self.data_path)[index : index + self.number]:
             file_path = path.join(self.data_path, file)
             data = torch.load(file_path, weights_only=False)
             for key in data_dict.keys():
@@ -67,14 +67,22 @@ class PreTrainDataLoader(object):
             data_dict[key] = torch.concat(value, dim=0)
         return data_dict
 
-    def get_dataloader(self, batch_size: Optional[int] = None, shuffle: Optional[bool] = None) -> DataLoader:
+    def get_dataloader(
+        self, batch_size: Optional[int] = None, shuffle: Optional[bool] = None
+    ) -> DataLoader:
         """获得预训练使用的DataLoader对象的方法"""
         data_dict = self.load_data()
-        dataset = TSDataset(time=data_dict['time'],
-                            time_mask=data_dict['time_mask'],
-                            sym_ids=data_dict['sym_ids'],
-                            sym_mask=data_dict['sym_mask'])
+        dataset = TSDataset(
+            time=data_dict["time"],
+            time_mask=data_dict["time_mask"],
+            sym_ids=data_dict["sym_ids"],
+            sym_mask=data_dict["sym_mask"],
+        )
         batch_size = self.batch_size if batch_size is None else batch_size
         shuffle = self.shuffle if shuffle is None else shuffle
-        return DataLoader(dataset, batch_size=batch_size, shuffle=shuffle,
-                          num_workers=self.num_workers)
+        return DataLoader(
+            dataset,
+            batch_size=batch_size,
+            shuffle=shuffle,
+            num_workers=self.num_workers,
+        )

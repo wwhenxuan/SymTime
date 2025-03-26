@@ -26,11 +26,16 @@ import os
 
 
 def group_values(values, groups, group_name):
-    return [np.array([x for x in v if not isinstance(x, float) or not np.isnan(x)]) for v in values[groups == group_name]]
+    return [
+        np.array([x for x in v if not isinstance(x, float) or not np.isnan(x)])
+        for v in values[groups == group_name]
+    ]
 
 
 def mase(forecast, insample, outsample, frequency):
-    return np.mean(np.abs(forecast - outsample)) / np.mean(np.abs(insample[:-frequency] - insample[frequency:]))
+    return np.mean(np.abs(forecast - outsample)) / np.mean(
+        np.abs(insample[:-frequency] - insample[frequency:])
+    )
 
 
 def smape_2(forecast, target):
@@ -52,7 +57,7 @@ class M4Summary:
         self.file_path = file_path
         self.training_set = M4Dataset.load(training=True, dataset_file=root_path)
         self.test_set = M4Dataset.load(training=False, dataset_file=root_path)
-        self.naive_path = os.path.join(root_path, 'submission-Naive2.csv')
+        self.naive_path = os.path.join(root_path, "submission-Naive2.csv")
 
     def evaluate(self):
         """
@@ -65,7 +70,9 @@ class M4Summary:
 
         naive2_forecasts = pd.read_csv(self.naive_path).values[:, 1:].astype(np.float32)
         # naive2_forecasts = np.array([v[~np.isnan(v)] for v in naive2_forecasts])  # 换成下面的
-        naive2_forecasts = np.array([np.array(v) for v in naive2_forecasts], dtype=object)
+        naive2_forecasts = np.array(
+            [np.array(v) for v in naive2_forecasts], dtype=object
+        )
 
         model_mases = {}
         naive2_smapes = {}
@@ -77,27 +84,53 @@ class M4Summary:
             if os.path.exists(file_name):
                 model_forecast = pd.read_csv(file_name).values
 
-            naive2_forecast = group_values(naive2_forecasts, self.test_set.groups, group_name)
-            target = group_values(self.test_set.values, self.test_set.groups, group_name)
+            naive2_forecast = group_values(
+                naive2_forecasts, self.test_set.groups, group_name
+            )
+            target = group_values(
+                self.test_set.values, self.test_set.groups, group_name
+            )
             # all timeseries within group have same frequency
-            frequency = self.training_set.frequencies[self.test_set.groups == group_name][0]
-            insample = group_values(self.training_set.values, self.test_set.groups, group_name)
+            frequency = self.training_set.frequencies[
+                self.test_set.groups == group_name
+            ][0]
+            insample = group_values(
+                self.training_set.values, self.test_set.groups, group_name
+            )
 
-            model_mases[group_name] = np.mean([mase(forecast=model_forecast[i],
-                                                    insample=insample[i],
-                                                    outsample=target[i],
-                                                    frequency=frequency) for i in range(len(model_forecast))])
-            naive2_mases[group_name] = np.mean([mase(forecast=naive2_forecast[i],
-                                                     insample=insample[i],
-                                                     outsample=target[i],
-                                                     frequency=frequency) for i in range(len(model_forecast))])
+            model_mases[group_name] = np.mean(
+                [
+                    mase(
+                        forecast=model_forecast[i],
+                        insample=insample[i],
+                        outsample=target[i],
+                        frequency=frequency,
+                    )
+                    for i in range(len(model_forecast))
+                ]
+            )
+            naive2_mases[group_name] = np.mean(
+                [
+                    mase(
+                        forecast=naive2_forecast[i],
+                        insample=insample[i],
+                        outsample=target[i],
+                        frequency=frequency,
+                    )
+                    for i in range(len(model_forecast))
+                ]
+            )
 
             naive2_forecast = np.array(naive2_forecast)  # 后加的两句，不然报错
             target = np.array(target)
 
             naive2_smapes[group_name] = np.mean(smape_2(naive2_forecast, target))
-            grouped_smapes[group_name] = np.mean(smape_2(forecast=model_forecast, target=target))
-            grouped_mapes[group_name] = np.mean(mape(forecast=model_forecast, target=target))
+            grouped_smapes[group_name] = np.mean(
+                smape_2(forecast=model_forecast, target=target)
+            )
+            grouped_mapes[group_name] = np.mean(
+                mape(forecast=model_forecast, target=target)
+            )
 
         grouped_smapes = self.summarize_groups(grouped_smapes)
         grouped_mapes = self.summarize_groups(grouped_mapes)
@@ -105,14 +138,20 @@ class M4Summary:
         grouped_naive2_smapes = self.summarize_groups(naive2_smapes)
         grouped_naive2_mases = self.summarize_groups(naive2_mases)
         for k in grouped_model_mases.keys():
-            grouped_owa[k] = (grouped_model_mases[k] / grouped_naive2_mases[k] +
-                              grouped_smapes[k] / grouped_naive2_smapes[k]) / 2
+            grouped_owa[k] = (
+                grouped_model_mases[k] / grouped_naive2_mases[k]
+                + grouped_smapes[k] / grouped_naive2_smapes[k]
+            ) / 2
 
         def round_all(d):
             return dict(map(lambda kv: (kv[0], np.round(kv[1], 3)), d.items()))
 
-        return round_all(grouped_smapes), round_all(grouped_owa), round_all(grouped_mapes), round_all(
-            grouped_model_mases)
+        return (
+            round_all(grouped_smapes),
+            round_all(grouped_owa),
+            round_all(grouped_mapes),
+            round_all(grouped_model_mases),
+        )
 
     def summarize_groups(self, scores):
         """
@@ -126,19 +165,19 @@ class M4Summary:
             return len(np.where(self.test_set.groups == group_name)[0])
 
         weighted_score = {}
-        for g in ['Yearly', 'Quarterly', 'Monthly']:
+        for g in ["Yearly", "Quarterly", "Monthly"]:
             weighted_score[g] = scores[g] * group_count(g)
             scores_summary[g] = scores[g]
 
         others_score = 0
         others_count = 0
-        for g in ['Weekly', 'Daily', 'Hourly']:
+        for g in ["Weekly", "Daily", "Hourly"]:
             others_score += scores[g] * group_count(g)
             others_count += group_count(g)
-        weighted_score['Others'] = others_score
-        scores_summary['Others'] = others_score / others_count
+        weighted_score["Others"] = others_score
+        scores_summary["Others"] = others_score / others_count
 
         average = np.sum(list(weighted_score.values())) / len(self.test_set.groups)
-        scores_summary['Average'] = average
+        scores_summary["Average"] = average
 
         return scores_summary

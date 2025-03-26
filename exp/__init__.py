@@ -7,15 +7,15 @@ from .exp_anomaly_detection import Exp_Anomaly_Detection
 
 def Exp(task_name):
     """Choose the right exp for model training"""
-    if task_name == 'long_term_forecast':
+    if task_name == "long_term_forecast":
         return Exp_Long_Term_Forecast
-    elif task_name == 'short_term_forecast':
+    elif task_name == "short_term_forecast":
         return Exp_Short_Term_Forecast
-    elif task_name == 'classification':
+    elif task_name == "classification":
         return Exp_Classification
-    elif task_name == 'imputation':
+    elif task_name == "imputation":
         return Exp_Imputation
-    elif task_name == 'anomaly_detection':
+    elif task_name == "anomaly_detection":
         return Exp_Anomaly_Detection
     else:
-        raise ValueError('Invalid task name')
+        raise ValueError("Invalid task name")
