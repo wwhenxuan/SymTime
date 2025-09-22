@@ -3,6 +3,7 @@
 Created on 2024/10/19 21:20
 @author: Whenxuan Wang
 @email: wwhenxuan@gmail.com
+@url: https://github.com/wwhenxuan/SymTime
 """
 import argparse
 import torch

@@ -3,6 +3,7 @@
 Created on 2024/9/23 16:39
 @author: Whenxuan Wang
 @email: wwhenxuan@gmail.com
+@url: https://github.com/wwhenxuan/SymTime
 加载优化器的模块, 包括学习率预热和动态学习率调整
 """
 from torch import Tensor

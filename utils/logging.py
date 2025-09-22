@@ -3,6 +3,7 @@
 Created on 2024/9/28 10:10
 @author: Whenxuan Wang
 @email: wwhenxuan@gmail.com
+@url: https://github.com/wwhenxuan/SymTime
 用于logging实验结果的mok
 """
 import os

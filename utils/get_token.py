@@ -3,6 +3,7 @@
 Created on 2024/9/21 20:20
 @author: Whenxuan Wang
 @email: wwhenxuan@gmail.com
+@url: https://github.com/wwhenxuan/SymTime
 获取大语言模型的Tokenizer
 """
 from transformers import BertTokenizer, GPT2Tokenizer, DistilBertTokenizer

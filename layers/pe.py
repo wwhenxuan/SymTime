@@ -3,6 +3,7 @@
 Created on 2024/9/16 12:31
 @author: Whenxuan Wang
 @email: wwhenxuan@gmail.com
+@url: https://github.com/wwhenxuan/SymTime
 """
 import torch
 from torch import nn

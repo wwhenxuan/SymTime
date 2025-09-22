@@ -3,6 +3,7 @@
 Created on 2024/10/13 10:04
 @author: Whenxuan Wang
 @email: wwhenxuan@gmail.com
+@url: https://github.com/wwhenxuan/SymTime
 获取模型的接口
 """
 from os import path

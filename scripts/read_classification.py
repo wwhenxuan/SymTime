@@ -2,6 +2,7 @@ import os
 import numpy as np
 from tqdm import tqdm
 
+
 class DataStruct(object):
 
     def __init__(self, dataset_name):
@@ -35,11 +36,10 @@ for folder_path in tqdm(path_list):
     info = folder_path.split("_")
     dataset = info[1]
     with open(data_path + folder_path + "/" + "result_classification.txt") as f:
-        accuracy = float(f.readlines()[1][:-1].split(':')[1])
+        accuracy = float(f.readlines()[1][:-1].split(":")[1])
 
     results.setdefault(dataset, DataStruct(dataset))
     results[dataset].add(accuracy, folder_path)
 
 for dataset in results.keys():
     print(results[dataset].best()[1], results[dataset].best()[0])
-

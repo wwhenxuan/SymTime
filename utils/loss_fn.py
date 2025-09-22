@@ -3,6 +3,7 @@
 Created on 2024/9/23 17:00
 @author: Whenxuan Wang
 @email: wwhenxuan@gmail.com
+@url: https://github.com/wwhenxuan/SymTime
 获取使用的损失函数的接口模块
 """
 from torch import nn

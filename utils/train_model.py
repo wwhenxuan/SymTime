@@ -3,6 +3,7 @@
 Created on 2024/9/23 15:56
 @author: Whenxuan Wang
 @email: wwhenxuan@gmail.com
+@url: https://github.com/wwhenxuan/SymTime
 用于模型训练的代码
 """
 import os

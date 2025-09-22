@@ -3,6 +3,7 @@
 Created on 2024/10/9 17:20
 @author: Whenxuan Wang
 @email: wwhenxuan@gmail.com
+@url: https://github.com/wwhenxuan/SymTime
 用于SymTime网络预训练
 """
 import random

@@ -3,6 +3,7 @@
 Created on 2024/9/30 21:30
 @author: Whenxuan Wang
 @email: wwhenxuan@gmail.com
+@url: https://github.com/wwhenxuan/SymTime
 """
 from torch import nn
 from torch import Tensor
@@ -46,7 +47,9 @@ class LLM(nn.Module):
     def init_llm(self) -> Tuple[DistilBertConfig, Any, Any]:
         """Select the LLM to use based on the name of the input model"""
         if self.llm_name == "DistilBert":
-            llm_config = DistilBertConfig.from_pretrained("distilbert/snapshots/12040accade4e8a0f71eabdb258fecc2e7e948be")
+            llm_config = DistilBertConfig.from_pretrained(
+                "distilbert/snapshots/12040accade4e8a0f71eabdb258fecc2e7e948be"
+            )
             llm_config.output_attentions = True
             llm_config.output_hidden_states = True
             llm, tokenizer = self.load_DistilBert(config=llm_config)
@@ -78,7 +81,8 @@ class LLM(nn.Module):
         try:
             # try to load the tokenizer from local device
             tokenizer = DistilBertTokenizer.from_pretrained(
-                "distilbert/snapshots/12040accade4e8a0f71eabdb258fecc2e7e948be", local_files_only=True
+                "distilbert/snapshots/12040accade4e8a0f71eabdb258fecc2e7e948be",
+                local_files_only=True,
             )
         except EnvironmentError:
             # try to download the tokenizer
