@@ -1,0 +1,33 @@
+context_window: 256
+patch_len: 16
+stride: 8
+padding_patch: None
+time_layers: 6
+d_model: 512
+n_heads: 8
+d_ff: 2048
+norm: BatchNorm
+attn_dropout: 0.1
+dropout: 0.1
+act: gelu
+bias_ff: True
+qkv_bias: True
+pre_norm: False
+llm_name: "DistilBert"
+llm_layers: 6
+hidden_size: 768
+freeze_layers: 3
+
+time_project_bias: False
+symbolic_project_bias: False
+embed_dim: 128
+
+# 动量编码器的更新
+momentum: 0.995
+# 温度系数
+temp: 0.07
+# 队列的大小
+queue_size: 60000
+
+# 动量蒸馏伪目标的比例
+alpha: 0.4
