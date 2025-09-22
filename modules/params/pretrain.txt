@@ -1,3 +1,0 @@
-download the pretrained model params:
-
-https://drive.google.com/file/d/1YNWvQdZVB_fgDgy7jnr1FeAgv4ALpVIc/view?usp=drive_link
