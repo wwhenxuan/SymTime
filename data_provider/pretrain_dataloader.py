@@ -17,14 +17,22 @@ warnings.filterwarnings("ignore")
 class TSDataset(Dataset):
     """Modified dataset object for the pre-training of SymTime"""
 
-    def __init__(self, time: torch.Tensor, time_mask: torch.Tensor, sym_ids: torch.Tensor, sym_mask: torch.Tensor) -> None:
+    def __init__(
+        self,
+        time: torch.Tensor,
+        time_mask: torch.Tensor,
+        sym_ids: torch.Tensor,
+        sym_mask: torch.Tensor,
+    ) -> None:
         self.time, self.time_mask = time, time_mask
         self.sym_ids, self.sym_mask = sym_ids, sym_mask
 
     def __len__(self) -> int:
         return self.time.size(0)
 
-    def __getitem__(self, index: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
+    def __getitem__(
+        self, index: torch.Tensor
+    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
         time, time_mask = self.time[index], self.time_mask[index]
         sym_ids, sym_mask = self.sym_ids[index], self.sym_mask[index]
         return time, time_mask, sym_ids, sym_mask

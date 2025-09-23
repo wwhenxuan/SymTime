@@ -66,7 +66,9 @@ class Exp_Pretraining(object):
                 is_pretrain=True, logging_path=self.main_path, datasets=[]
             )
 
-    def fit(self) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
+    def fit(
+        self,
+    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
         """训练模型拟合数据"""
         self.accelerator.print(
             Fore.GREEN + "Starting SymTime Model Pretraining..." + Style.RESET_ALL

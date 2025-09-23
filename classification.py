@@ -60,8 +60,12 @@ parser.add_argument(
 )
 parser.add_argument("--patch_len", type=int, default=16, help="划分Patch的长度")
 parser.add_argument("--stride", type=int, default=16, help="划分Patch的步长")
-parser.add_argument("--padding_patch", type=bool, default=True, help="是否填充最后一个Patch")
-parser.add_argument("--out_dropout", type=float, default=0.1, help="模型最后输出的dropout")
+parser.add_argument(
+    "--padding_patch", type=bool, default=True, help="是否填充最后一个Patch"
+)
+parser.add_argument(
+    "--out_dropout", type=float, default=0.1, help="模型最后输出的dropout"
+)
 parser.add_argument(
     "--use_avg", type=bool, default=False, help="use moving average decomposition"
 )
