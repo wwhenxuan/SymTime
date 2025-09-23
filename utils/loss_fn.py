@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
 """
+Get the interface module of the loss function.
+
 Created on 2024/9/23 17:00
 @author: Whenxuan Wang
 @email: wwhenxuan@gmail.com
 @url: https://github.com/wwhenxuan/SymTime
-获取使用的损失函数的接口模块
 """
 from torch import nn
 from typing import Callable
 
 
 def get_criterion(name: str = "MSE") -> Callable:
-    """获取神经网络损失函数的接口配置"""
+    """Get the interface configuration of the neural network loss function"""
     if name == "MSE":
         return nn.MSELoss
     elif name == "MAE":
@@ -23,4 +24,4 @@ def get_criterion(name: str = "MSE") -> Callable:
     elif name == "Cos":
         return nn.CosineEmbeddingLoss
     else:
-        raise ValueError("损失函数名称填写错误!")
+        raise ValueError("The loss function name is incorrect.!")

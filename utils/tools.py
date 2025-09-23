@@ -39,7 +39,7 @@ def time_now():
 
 def makedir(directory: str, folder_name: str) -> None:
     """Function to create a folder in the specified directory"""
-    
+
     # Constructing the complete path
     new_folder_path = os.path.join(directory, folder_name)
 

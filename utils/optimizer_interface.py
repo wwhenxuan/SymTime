@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Load the optimizer module, 
+Load the optimizer module,
 including learning rate warmup and dynamic learning rate adjustment
 
 Created on 2024/9/23 16:39
@@ -21,7 +21,7 @@ from typing import Optional, List
 
 class OptimInterface(object):
     """
-    The General Interface for Loading Optimizers, 
+    The General Interface for Loading Optimizers,
     including Learning Rate Warmup and Dynamic Learning Rate Adjustment
     """
 
@@ -29,10 +29,10 @@ class OptimInterface(object):
         self.accelerator = accelerator
         # Get the optimizer used
         self.optimizer = args.optimizer
-        
+
         # Methods for obtaining predictions and dynamic learning rate adjustment
         self.warmup, self.scheduler = args.warmup, args.scheduler
-        
+
         # Get the number of warm-up rounds and the total number of training rounds
         self.num_epochs, self.warmup_epochs = args.num_epochs, args.warmup_epochs
         self.pct_start = self.warmup_epochs / self.num_epochs
@@ -64,15 +64,15 @@ class OptimInterface(object):
         if self.optimizer == "SGD":
             # Using stochastic gradient descent
             return self.load_SGD(parameters)
-        
+
         elif self.optimizer == "Adam":
             # Using Adam optimizer
             return self.load_Adam(parameters)
-        
+
         elif self.optimizer == "AdamW":
             # Using the AdamW optimizer
             return self.load_AdamW(parameters)
-        
+
         else:
             raise ValueError("args.optimizer inputs error!")
 
@@ -89,10 +89,10 @@ class OptimInterface(object):
         # If OneCycle is used, it comes with a learning rate warm-up process
         if self.scheduler == "OneCycle":
             return self.load_OneCycleLR(optimizer, loader_len)
-        
+
         # First load the learning rate warm-up method
         warmup_scheduler = self.load_warmup(optimizer)
-        
+
         # Reloading dynamic learning rate adjustment method
         if self.scheduler == "StepLR":
             dynamic_scheduler = self.load_StepLR(optimizer)
@@ -100,7 +100,7 @@ class OptimInterface(object):
             dynamic_scheduler = self.load_ExponentialLR(optimizer)
         else:
             raise ValueError("args.scheduler inputs error!")
-        
+
         # Combining learning rate warmup and dynamic learning rate adjustment
         return lr_scheduler.SequentialLR(
             optimizer,

@@ -41,31 +41,33 @@ class Exp_Pretraining(object):
         # Get the number of training rounds
         self.num_epochs = args.num_epochs
         self.save_epochs = args.save_epochs
-        
+
         # Get the model and training dataset
         self.model = model
-        
+
         # Get the optimizer for the neural network
         self.optimizer = optimizer
-        
+
         # Get the loss function
         self.criterion = criterion
-        
+
         # Get dynamically adjusted learning rate
         self.scheduler = scheduler
-        
+
         # Get the Synergy Accelerator
         self.accelerator = accelerator
-        
+
         # Record the current process ID
         self.process_index = self.accelerator.process_index
-        
+
         # Get the training set and validation set
         self.data_interface = data_interface
         # Get the current training device
         self.device = self.accelerator.device
-        
-        if self.process_index == 0:  # Only the main process records losses and saves model parameters
+
+        if (
+            self.process_index == 0
+        ):  # Only the main process records losses and saves model parameters
             # Get the address where the model and parameters are saved
             self.main_path, self.params_path = self.init_path()
             # Create a Logging module for model training
@@ -90,9 +92,9 @@ class Exp_Pretraining(object):
 
         for idx, epoch in enumerate(range(1, self.num_epochs + 1), 0):
             """Here begins an Epoch"""
-            num_samples = 0  
+            num_samples = 0
             # The cumulative number of samples traversed in this Epoch
-            
+
             for ii in range(1, len(self.data_interface) + 1):
                 """In one Epoch, all data must be traversed and read"""
                 self.accelerator.print(
@@ -118,17 +120,17 @@ class Exp_Pretraining(object):
                     loss_mtm, loss_mlm, loss_t2s, loss_s2t = self.model(
                         time, time_mask, sym_ids, sym_mask
                     )
-                    
+
                     # Acquiring and integrating errors
                     loss = loss_mtm + loss_mlm + (loss_t2s + loss_s2t) / 2
                     # Back propagation of error
                     self.accelerator.backward(loss)
-                    
+
                     # Parameter update
                     self.optimizer.step()
                     # Checking model loss
                     check_loss(loss, train_type="Pretrain")
-                    
+
                     # Calculate the cumulative loss of this epoch
                     train_loss[idx] += loss.item()
                     train_loss_mtm[idx] += loss_mtm.item()
@@ -152,18 +154,18 @@ class Exp_Pretraining(object):
                     self.scheduler.step()
                 # Freeing up memory for training optimizers
                 self.accelerator.clear(train_loader)
-                
+
             # Record changes in final loss
             train_loss[idx] = train_loss[idx] / num_samples
             train_loss_mtm[idx] = train_loss_mtm[idx] / num_samples
             train_loss_mlm[idx] = train_loss_mlm[idx] / num_samples
             train_loss_t2s[idx] = train_loss_t2s[idx] / num_samples
             train_loss_s2t[idx] = train_loss_s2t[idx] / num_samples
-            
+
             if epoch % self.save_epochs == 0:
                 # Save the parameters of a pre-trained model
                 self.save_model(loss=train_loss[idx], epoch=epoch)
-                
+
             # Logging training process to register the current epoch and the final loss
             self.logging_epoch(
                 epoch,
@@ -184,24 +186,24 @@ class Exp_Pretraining(object):
 
     def init_path(self) -> Tuple[str, str]:
         """Get the address of the pre-training saved model and logging"""
-        
+
         # Directory where the model is saved
         save_path = self.args.save_path
-        
+
         # Determine how many files are in the save directory
         num_folder = len(os.listdir(save_path))
 
         # Create a folder to save the model
         folder_name = f"exp{num_folder + 1}"
         makedir(save_path, folder_name)
-        
+
         # Update the main address of the save directory
         main_path = path.join(save_path, folder_name)
-        
+
         # Create a folder to save model parameters
         makedir(main_path, "params")
         params_path = path.join(main_path, "params")
-        
+
         print(f"Attention the logging path is {main_path}")
         return main_path, params_path
 
