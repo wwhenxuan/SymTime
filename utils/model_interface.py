@@ -4,7 +4,6 @@ Created on 2024/10/13 10:04
 @author: Whenxuan Wang
 @email: wwhenxuan@gmail.com
 @url: https://github.com/wwhenxuan/SymTime
-获取模型的接口
 """
 from os import path
 import yaml
@@ -16,24 +15,31 @@ from colorama import Fore, Style
 
 
 class ModelInterface(object):
-    """加载模型的通用接口，包括模型预训练和模型微调"""
+    """
+    A general interface for loading models,
+    including model pre-training and model fine-tuning
+    """
 
     def __init__(self, args, accelerator) -> None:
         self.args = args
-        # 使用的Accelerator对象
+
+        # Accelerator object used
         self.accelerator = accelerator
-        # 判断是否进行模型的预训练
+
+        # Determine whether to pre-train the model
         self.is_pretrain = args.is_pretrain
-        # 判断使用模型的型号
+
+        # Determine the model to use
         self.model_type = args.model
         self.model = self.load_pretrain()
 
     def load_pretrain(self) -> nn.Module:
-        """加载初始化的模型进行预训练"""
+        """Load the initialized model for pre-training"""
         self.accelerator.print(
             Fore.RED + "Now is loading model" + Style.RESET_ALL, end=" -> "
         )
-        # 获取配置文件的地址
+
+        # Get the address of the configuration file
         configs_path = path.join("configs", f"SymTime_{self.model_type}.yaml")
         with open(configs_path, "r", encoding="utf-8") as file:
             config = yaml.safe_load(file)
@@ -47,7 +53,7 @@ class ModelInterface(object):
         return model
 
     def trainable_params(self) -> List:
-        """获取可训练的模型参数"""
+        """Get trainable model parameters"""
         train_params = []
         for params in self.model.parameters():
             if params.requires_grad is True:
