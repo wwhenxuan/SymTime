@@ -4,7 +4,6 @@ Created on 2024/9/23 15:56
 @author: Whenxuan Wang
 @email: wwhenxuan@gmail.com
 @url: https://github.com/wwhenxuan/SymTime
-用于模型训练的代码
 """
 import os
 from os import path
@@ -26,7 +25,7 @@ from utils.logging import Logging
 
 
 class Exp_Pretraining(object):
-    """用于模型预训练的接口"""
+    """The Interface for the pre-training of SymTime"""
 
     def __init__(
         self,
@@ -39,29 +38,37 @@ class Exp_Pretraining(object):
         data_interface,
     ) -> None:
         self.args = args
-        # 获取训练轮数
+        # Get the number of training rounds
         self.num_epochs = args.num_epochs
         self.save_epochs = args.save_epochs
-        # 获取模型和训练数据集
+        
+        # Get the model and training dataset
         self.model = model
-        # 获取神经网络的优化器
+        
+        # Get the optimizer for the neural network
         self.optimizer = optimizer
-        # 获取损失函数
+        
+        # Get the loss function
         self.criterion = criterion
-        # 获取动态调整学习率
+        
+        # Get dynamically adjusted learning rate
         self.scheduler = scheduler
-        # 获取协同加速器
+        
+        # Get the Synergy Accelerator
         self.accelerator = accelerator
-        # 记录当前的进程号
+        
+        # Record the current process ID
         self.process_index = self.accelerator.process_index
-        # 获取训练集和验证集
+        
+        # Get the training set and validation set
         self.data_interface = data_interface
-        # 获取当前训练设备
+        # Get the current training device
         self.device = self.accelerator.device
-        if self.process_index == 0:  # 只有主进程记录损失并保存模型参数
-            # 获取保存模型和参数的地址
+        
+        if self.process_index == 0:  # Only the main process records losses and saves model parameters
+            # Get the address where the model and parameters are saved
             self.main_path, self.params_path = self.init_path()
-            # 创建模型训练的Logging模块
+            # Create a Logging module for model training
             self.logging = Logging(
                 is_pretrain=True, logging_path=self.main_path, datasets=[]
             )
@@ -69,12 +76,12 @@ class Exp_Pretraining(object):
     def fit(
         self,
     ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
-        """训练模型拟合数据"""
+        """Training model to fit data"""
         self.accelerator.print(
             Fore.GREEN + "Starting SymTime Model Pretraining..." + Style.RESET_ALL
         )
 
-        # 记录SymTime在自监督预训练中使用的四种损失函数
+        # Record the four loss functions used by SymTime in self-supervised pre-training
         train_loss = torch.zeros(self.num_epochs, device=self.device)
         train_loss_mtm = torch.zeros(self.num_epochs, device=self.device)
         train_loss_mlm = torch.zeros(self.num_epochs, device=self.device)
@@ -82,10 +89,12 @@ class Exp_Pretraining(object):
         train_loss_s2t = torch.zeros(self.num_epochs, device=self.device)
 
         for idx, epoch in enumerate(range(1, self.num_epochs + 1), 0):
-            """这里是开始了一个Epoch"""
-            num_samples = 0  # 这一个Epoch中遍历的累计样本数目
+            """Here begins an Epoch"""
+            num_samples = 0  
+            # The cumulative number of samples traversed in this Epoch
+            
             for ii in range(1, len(self.data_interface) + 1):
-                """在一个Epoch中要遍历读取完所有的数据"""
+                """In one Epoch, all data must be traversed and read"""
                 self.accelerator.print(
                     Fore.RED + "Now is loading pretraining data" + Style.RESET_ALL,
                     end=" -> ",
@@ -105,19 +114,22 @@ class Exp_Pretraining(object):
                 ):
                     self.optimizer.zero_grad()
                     num_samples += time.shape[0]
-                    # 直接在模型正向传播的过程中获得损失
+                    # Obtain the loss directly during the forward propagation of the model
                     loss_mtm, loss_mlm, loss_t2s, loss_s2t = self.model(
                         time, time_mask, sym_ids, sym_mask
                     )
-                    # 获取和整合误差
+                    
+                    # Acquiring and integrating errors
                     loss = loss_mtm + loss_mlm + (loss_t2s + loss_s2t) / 2
-                    # 误差的反向传播
+                    # Back propagation of error
                     self.accelerator.backward(loss)
-                    # 参数的更新
+                    
+                    # Parameter update
                     self.optimizer.step()
-                    # 检查模型损失
+                    # Checking model loss
                     check_loss(loss, train_type="Pretrain")
-                    # 计算这个epoch的累计损失
+                    
+                    # Calculate the cumulative loss of this epoch
                     train_loss[idx] += loss.item()
                     train_loss_mtm[idx] += loss_mtm.item()
                     train_loss_mlm[idx] += loss_mlm.item()
@@ -136,20 +148,23 @@ class Exp_Pretraining(object):
                         + f" loss_mtm: {round(train_loss_mtm[idx].item() / num_samples, 6)}, loss_mlm: {round(train_loss_mlm[idx].item() / num_samples, 6)}, "
                         f"loss_t2s: {round(train_loss_t2s[idx].item() / num_samples, 6)}, loss_s2t: {round(train_loss_s2t[idx].item() / num_samples, 6)}"
                     )
-                    # 动态调整学习率
+                    # Dynamically adjust learning rate
                     self.scheduler.step()
-                # 释放训练优化器的内存
+                # Freeing up memory for training optimizers
                 self.accelerator.clear(train_loader)
-            # 记录最终损失的变化
+                
+            # Record changes in final loss
             train_loss[idx] = train_loss[idx] / num_samples
             train_loss_mtm[idx] = train_loss_mtm[idx] / num_samples
             train_loss_mlm[idx] = train_loss_mlm[idx] / num_samples
             train_loss_t2s[idx] = train_loss_t2s[idx] / num_samples
             train_loss_s2t[idx] = train_loss_s2t[idx] / num_samples
+            
             if epoch % self.save_epochs == 0:
-                # 保存一次预训练模型的参数
+                # Save the parameters of a pre-trained model
                 self.save_model(loss=train_loss[idx], epoch=epoch)
-            # Logging训练过程 登记当前的epoch和最后的损失
+                
+            # Logging training process to register the current epoch and the final loss
             self.logging_epoch(
                 epoch,
                 train_loss[idx],
@@ -168,24 +183,30 @@ class Exp_Pretraining(object):
         )
 
     def init_path(self) -> Tuple[str, str]:
-        """获取本次预训练保存模型和logging的地址"""
-        # 保存模型的目录
+        """Get the address of the pre-training saved model and logging"""
+        
+        # Directory where the model is saved
         save_path = self.args.save_path
-        # 判断保存目录下有多少个文件
+        
+        # Determine how many files are in the save directory
         num_folder = len(os.listdir(save_path))
-        # 创建本次保存模型的文件夹
+
+        # Create a folder to save the model
         folder_name = f"exp{num_folder + 1}"
         makedir(save_path, folder_name)
-        # 更新保存目录的主要地址
+        
+        # Update the main address of the save directory
         main_path = path.join(save_path, folder_name)
-        # 创建保存模型参数的文件夹
+        
+        # Create a folder to save model parameters
         makedir(main_path, "params")
         params_path = path.join(main_path, "params")
+        
         print(f"Attention the logging path is {main_path}")
         return main_path, params_path
 
     def save_model(self, epoch: int, loss: torch.Tensor) -> None:
-        """保存模型的参数"""
+        """Save the parameters of SymTime time encoder in pre-training"""
         if self.process_index == 0:
             self.accelerator.print(
                 Fore.RED + "Now is saving the pretrained params" + Style.RESET_ALL,
@@ -207,14 +228,14 @@ class Exp_Pretraining(object):
         train_loss_t2s: torch.Tensor,
         train_loss_s2t: torch.Tensor,
     ) -> None:
-        """记录一个Epoch的训练损失变化情况"""
+        """Record the changes in training loss of an Epoch"""
         gather_train_loss = self.accelerator.gather(train_loss).mean().item()
         gather_train_loss_mtm = self.accelerator.gather(train_loss_mtm).mean().item()
         gather_train_loss_mlm = self.accelerator.gather(train_loss_mlm).mean().item()
         gather_train_loss_t2s = self.accelerator.gather(train_loss_t2s).mean().item()
         gather_train_loss_s2t = self.accelerator.gather(train_loss_s2t).mean().item()
         if self.process_index == 0:
-            # 记录一个Epoch下的所有进程的平均损失
+            # Record the average loss of all processes under an Epoch
             self.logging.logging_epoch(
                 epoch,
                 gather_train_loss,
@@ -226,23 +247,23 @@ class Exp_Pretraining(object):
 
 
 def init_path(save_path) -> str:
-    """获取本次预训练保存模型和logging的地址"""
-    # 判断保存目录下有多少个文件
+    """Get the address of the pre-training saved model and logging"""
+    # Determine how many files are in the save directory
     num_folder = len(os.listdir(save_path))
 
-    # 创建本次保存模型的文件夹
+    # Create a folder to save the model
     folder_name = f"exp{num_folder + 1}"
     makedir(save_path, folder_name)
 
-    # 更新保存目录的主要地址
+    # Update the main address of the save directory
     main_path = path.join(save_path, folder_name)
 
-    # 创建保存模型参数的文件夹
+    # Create a folder to save model parameters
     return main_path
 
 
 def check_loss(loss: torch.Tensor, train_type: str) -> None:
-    """检查训练和验证的损失避免梯度爆炸"""
+    """Check training and validation losses to avoid exploding gradients"""
     if not torch.isfinite(loss):
         print(
             Fore.RED + f"{train_type} now occurs ERROR: non-finite loss, end training!"

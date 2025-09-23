@@ -32,22 +32,23 @@ def concat_all_gather(tensor):
 
 
 def time_now():
-    """获取当前的格式化时间"""
+    """Get the current formatted time"""
     now = datetime.now()
     return now.strftime("%Y-%m-%d %H:%M:%S")
 
 
 def makedir(directory: str, folder_name: str) -> None:
-    """在指定目录下创建文件夹的函数"""
-    # 构建完整的路径
+    """Function to create a folder in the specified directory"""
+    
+    # Constructing the complete path
     new_folder_path = os.path.join(directory, folder_name)
 
-    # 判断目录是否存在，不存在则创建
+    # Determine if the directory exists, if not create it
     try:
         if not os.path.exists(new_folder_path):
             os.makedirs(new_folder_path)
     except OSError as e:
-        print(f"创建文件夹时出错: {e}")
+        print(f"Error creating folder: {e}")
 
 
 plt.switch_backend("agg")

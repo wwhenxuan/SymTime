@@ -177,7 +177,7 @@ class TSTEncoderLayer(nn.Module):
 
     def forward(
         self, src: Tensor, attn_mask: Optional[Tensor] = None
-    ) -> Union[Tuple[Tensor, Tensor] or Tensor]:
+    ) -> Union[Tuple[Tensor, Tensor], Tensor]:
         """Multi-Head attention sublayer"""
 
         # Whether to use pre-norm for attention layer
@@ -298,7 +298,7 @@ class _ScaledDotProductAttention(nn.Module):
 
     def forward(
         self, q: Tensor, k: Tensor, v: Tensor, attn_mask: Optional[Tensor] = None
-    ) -> Union[Tuple[Tensor, Tensor, Tensor] or Tuple[Tensor, Tensor]]:
+    ) -> Union[Tuple[Tensor, Tensor, Tensor], Tuple[Tensor, Tensor]]:
         """
         :param q: [batch_size, n_heads, num_token, d_k]
         :param k: [batch_size, n_heads, d_k, num_token]
