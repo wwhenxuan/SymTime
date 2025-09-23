@@ -61,7 +61,6 @@ python -u long_term_forecast.py \
   --patience 3 \
 
 
-
 python -u long_term_forecast.py \
   --task_name "long_term_forecast" \
   --dataset_name "ECL" \
