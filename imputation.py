@@ -20,6 +20,7 @@ parser.add_argument("--model", type=str, default="SymTime")
 parser.add_argument(
     "--pretrain_path", type=str, default="./modules/params/finetuning.pth"
 )
+
 # data loader
 parser.add_argument("--data", type=str, default="ETTh1", help="datasets type")
 parser.add_argument(

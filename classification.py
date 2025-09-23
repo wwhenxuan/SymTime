@@ -22,7 +22,7 @@ parser.add_argument("--model", type=str, default="SymTime")
 parser.add_argument(
     "--pretrain_path", type=str, default="./modules/params/finetuning.pth"
 )
-parser.add_argument("--pretrain_id", type=str, default="norm")
+parser.add_argument("--pretrain_id", type=str, default="zero")
 
 # data loader
 parser.add_argument("--data", type=str, default="UEA", help="datasets type")
