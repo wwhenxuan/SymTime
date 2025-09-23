@@ -4,38 +4,43 @@ Created on 2024/9/28 10:10
 @author: Whenxuan Wang
 @email: wwhenxuan@gmail.com
 @url: https://github.com/wwhenxuan/SymTime
-用于logging实验结果的mok
 """
 import os
 from os import path
+
+import torch
 import pandas as pd
 from matplotlib import pyplot as plt
 
 from .tools import time_now
 
-from typing import Tuple, Callable, Dict, List
+from typing import Tuple, Union, Callable, Dict, List
 
 
 class Logging(object):
-    """logging实验结果的模块接口"""
+    """The interface for logging experimental results"""
 
     def __init__(self, is_pretrain: bool, logging_path: str, datasets: List) -> None:
-        # 判断是否是预训练
+        # Determine whether it is pre-training
         self.is_pretrain = is_pretrain
-        # 排除或是使用的数据集
+
+        # Datasets excluded or used
         self.datasets = datasets
-        # 进行logging的地址
+
+        # The address where the recording is performed
         self.logging_path = logging_path
-        # 获得logging的数据字典和具体的方法
+
+        # Get the data dictionary and specific methods of recording
         self.dict, self.logging_epoch = self.init_logging()
-        # 创建一个可以写入的TXT文件
+
+        # Create a TXT file that can be written
         self.text = create_txt_file(
             file_path=self.logging_path, file_name="pretrain.txt"
         )
 
     def init_logging(self) -> Tuple[Dict, Callable]:
-        """根据训练类型返回对应形式的字典和方法"""
-        # 如果是预训练
+        """Returns a dictionary and method of the corresponding form according to the training type"""
+        # If it is pre-training
         return {
             "time": [],
             "epoch": [],
@@ -47,12 +52,18 @@ class Logging(object):
         }, self.logging_pretrain
 
     def logging_pretrain(
-        self, epoch: int, loss: float, loss_mtm, loss_mlm, loss_t2s, loss_s2t
+        self,
+        epoch: int,
+        loss: Union[float, torch.Tensor],
+        loss_mtm: Union[float, torch.Tensor],
+        loss_mlm: Union[float, torch.Tensor],
+        loss_t2s: Union[float, torch.Tensor],
+        loss_s2t: Union[float, torch.Tensor],
     ) -> None:
-        """logging预训练模型的训练过程"""
-        self.dict["time"].append(time_now())  # 获取当前时间
-        self.dict["epoch"].append(epoch)  # 添加当前训练的Epoch
-        self.dict["loss"].append(loss)  # 获取当前无监督预训练的损失
+        """Logging the training process of the pre-trained model"""
+        self.dict["time"].append(time_now())  # Get the current time
+        self.dict["epoch"].append(epoch)  # Add the current training Epoch
+        self.dict["loss"].append(loss)  # Get the current unsupervised pre-training loss
         self.dict["loss_mtm"].append(loss_mtm)
         self.dict["loss_mlm"].append(loss_mlm)
         self.dict["loss_t2s"].append(loss_t2s)
@@ -60,19 +71,26 @@ class Logging(object):
         self.logging_txt(epoch, loss, loss_mtm, loss_mlm, loss_t2s, loss_s2t)
 
     def logging_txt(
-        self, epoch: int, loss: float, loss_mtm, loss_mlm, loss_t2s, loss_s2t
+        self,
+        epoch: int,
+        loss: Union[float, torch.Tensor],
+        loss_mtm: Union[float, torch.Tensor],
+        loss_mlm: Union[float, torch.Tensor],
+        loss_t2s: Union[float, torch.Tensor],
+        loss_s2t: Union[float, torch.Tensor],
     ) -> None:
-        """写入txt"""
+        """Write the results to txt file"""
         content = f"epoch={epoch}, loss={loss}, loss_mtm={loss_mtm}, loss_mlm={loss_mlm}, loss_t2s={loss_t2s}, loss_s2t={loss_s2t}"
         write_to_txt(file_path=self.text, content=content)
 
     def dict2csv(self) -> None:
-        """将logging得到的字典写入csv文件中"""
+        """Write the recorded dictionary into a csv file"""
         df = pd.DataFrame(self.dict)
         df.to_csv(path.join(self.logging_path, "logging.csv"), index=False)
 
     def plot_results(self) -> None:
-        """实验结果可视化的函数"""
+        """Function for visualizing experimental results"""
+
         fig, ax = plt.subplots(figsize=(10, 4))
         if self.is_pretrain is True:
             # ax.plot(self.dict["epoch"], self.dict["loss"], color='royalblue', label='loss')
@@ -138,28 +156,30 @@ class Logging(object):
         )
 
 
-def create_txt_file(file_path, file_name):
+def create_txt_file(file_path: str, file_name: str) -> str:
     """
-    在指定目录下创建一个Txt文件。
-    :param file_path: 要创建文件的目录路径
-    :param file_name: 要创建的文件名（包括.txt扩展名）
+    Creates a TXT file in the specified directory.
+
+    :param file_path: The directory path where the file is to be created.
+    :param file_name: The name of the file to be created (including the .txt extension).
     """
     if not os.path.exists(file_path):
         assert OSError
-    # 完整的文件路径
+    # Full file path
     full_file_path = os.path.join(file_path, file_name)
-    # 创建并打开文件
+    # Create and open a file
     with open(full_file_path, "w", encoding="utf-8") as file:
-        pass  # 创建文件，不需要写入任何内容
+        pass  # Create a file without writing anything
     return full_file_path
 
 
-def write_to_txt(file_path, content, mode="a"):
+def write_to_txt(file_path: str, content: str, mode: str = "a") -> None:
     """
-    根据传入的参数内容向Txt文件中写入内容。
-    :param file_path: 文件的完整路径
-    :param content: 要写入的内容
-    :param mode: 写入模式，默认为'a'（追加模式），如果为'w'则覆盖原有内容
+    Writes content to a TXT file based on the passed parameters.
+
+    :param file_path: The full path to the file
+    :param content: The content to be written
+    :param mode: The write mode. Defaults to 'a' (append mode). 'w' overwrites the existing content.
     """
     with open(file_path, mode, encoding="utf-8") as file:
-        file.write(content + "\n")  # 写入内容，并在末尾添加换行符
+        file.write(content + "\n")  # Write the content and add a newline at the end
