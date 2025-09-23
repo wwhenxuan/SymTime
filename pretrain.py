@@ -220,6 +220,10 @@ if __name__ == "__main__":
     trainer = PreTrainer(
         args, model, optimizer, criterion, scheduler, accelerator, train_data
     )
-    train_loss, train_loss_mtm, train_loss_mlm, train_loss_t2s, train_loss_s2t = (
-        trainer.fit()
-    )
+    (
+        train_loss,
+        train_loss_mtm,
+        train_loss_mlm,
+        train_loss_t2s,
+        train_loss_s2t,
+    ) = trainer.fit()

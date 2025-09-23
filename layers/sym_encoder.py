@@ -5,8 +5,8 @@ Created on 2024/9/30 21:30
 @email: wwhenxuan@gmail.com
 @url: https://github.com/wwhenxuan/SymTime
 """
+import torch
 from torch import nn
-from torch import Tensor
 from transformers import DistilBertConfig, DistilBertForMaskedLM, DistilBertTokenizer
 from typing import Tuple, Any
 
@@ -26,13 +26,17 @@ class LLM(nn.Module):
         self.llm_name = llm_name
         self.llm_layers = llm_layers
         self.freeze_layers = freeze_layers
+
         # Get basic config file of LLM
         self.llm_configs, self.llm, self.tokenizer = self.init_llm()
         self.hidden_size = hidden_size
+
         # Freeze the first n layers of parameters of LLM
         self.freeze()
 
-    def forward(self, input_ids: Tensor, att_mask: Tensor, labels: Tensor) -> Tensor:
+    def forward(
+        self, input_ids: torch.Tensor, att_mask: torch.Tensor, labels: torch.Tensor
+    ) -> torch.Tensor:
         """Forward propagation part of LLM"""
         outputs = self.llm(input_ids, att_mask, labels=labels)
         return outputs  # The loss can be obtained directly from the output of the model

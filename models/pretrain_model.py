@@ -3,10 +3,10 @@
 Created on 2024/9/30 21:27
 @author: Whenxuan Wang
 @email: wwhenxuan@gmail.com
+@url: https://github.com/wwhenxuan/SymTime
 """
 import torch
 from torch import nn
-from torch import Tensor
 from torch.nn import functional as F
 from layers import TSTEncoder
 from layers import LLM
@@ -36,16 +36,20 @@ class SymTime(nn.Module):
         self.llm_name = configs["llm_name"]
         self.llm_layers = configs["llm_layers"]
         self.hidden_size = configs["hidden_size"]
+
         # Freeze the first n layers of parameters of LLM
         self.freeze_layers = configs["freeze_layers"]
-
         self.embed_dim = configs["embed_dim"]
+
         # The ratio of momentum model parameter updates
         self.momentum = configs["momentum"]
+
         # Size of the Momentum Queue
         self.queue_size = configs["queue_size"]
+
         # Comparative learning annealing parameters
         self.temp = nn.Parameter(torch.ones([]) * configs["temp"])
+
         # Proportion of false targets in momentum distillation
         self.alpha = configs["alpha"]
 
@@ -94,6 +98,7 @@ class SymTime(nn.Module):
 
         # Get the tokenizer used by the text encoder
         self.tokenizer = self.symbolic_encoder.tokenizer
+
         # The size of the text capacity
         self.vocab_size = self.tokenizer.vocab_size
 
@@ -110,7 +115,6 @@ class SymTime(nn.Module):
             act=configs["act"],
             pre_norm=configs["pre_norm"],
         )
-
         self.time_proj_m = nn.Linear(
             in_features=self.d_model, out_features=self.embed_dim
         )
@@ -141,8 +145,12 @@ class SymTime(nn.Module):
         self.sym_queue = F.normalize(self.sym_queue, dim=0)
 
     def forward(
-        self, time: Tensor, time_mask: Tensor, input_ids: Tensor, attn_mask: Tensor
-    ) -> Tuple[Tensor, Tensor, Tensor, Tensor]:
+        self,
+        time: torch.Tensor,
+        time_mask: torch.Tensor,
+        input_ids: torch.Tensor,
+        attn_mask: torch.Tensor,
+    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
         with torch.no_grad():
             self.temp.clamp_(0.001, 0.5)
 
@@ -200,12 +208,15 @@ class SymTime(nn.Module):
             sym_features_m = F.normalize(
                 self.sym_proj_m(sym_outputs_m.hidden_states[-1][:, 0, :]), dim=-1
             )
+
             # symbol features enqueue
             sym_features_all = torch.cat(
                 [sym_features_m.t(), self.sym_queue.clone().detach()], dim=1
             )
+
             # Let the time series features match the symbol features [batch_size, batch_size]
             sim_t2s_m = time_features_m @ sym_features_all / self.temp  # s(I, Tm) / tao
+
             # Let the symbol features match the time series features
             sim_s2t_m = sym_features_m @ time_features_all / self.temp  # s(T, Im) / tao
 
@@ -236,7 +247,9 @@ class SymTime(nn.Module):
 
         return loss_mtm, loss_mlm, loss_t2s, loss_s2t
 
-    def time_masking(self, inputs: Tensor, attn_mask: Tensor) -> Tuple[Tensor, Tensor]:
+    def time_masking(
+        self, inputs: torch.Tensor, attn_mask: torch.Tensor
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
         """Function to add mask to time series data"""
         ts = inputs.clone()
         mask = attn_mask.clone()
@@ -258,12 +271,12 @@ class SymTime(nn.Module):
 
     def nlp_mask(
         self,
-        input_ids: Tensor,
+        input_ids: torch.Tensor,
         vocab_size: int,
         device: torch.device,
-        targets: Tensor = None,
+        targets: torch.Tensor = None,
         masked_indices=None,
-    ) -> Union[Tuple[Tensor, Tensor] or Tensor]:
+    ) -> Union[Tuple[torch.Tensor, torch.Tensor] or torch.Tensor]:
         """Function to add mask to symbolic data"""
         probability_matrix = torch.full(targets.shape, self.sym_mask_ratio)
         if masked_indices is None:
@@ -302,8 +315,8 @@ class SymTime(nn.Module):
             return input_ids
 
     @torch.no_grad()
-    def copy_params(self):
-        """复制动量模型的参数"""
+    def copy_params(self) -> None:
+        """Copy the parameters of the momentum model"""
         for model_pair in self.model_pairs:
             for param, param_m in zip(
                 model_pair[0].parameters(), model_pair[1].parameters()
@@ -312,8 +325,8 @@ class SymTime(nn.Module):
                 param_m.requires_grad = False  # not update the momentum by gradient
 
     @torch.no_grad()
-    def momentum_update(self):
-        """更新动量编码器的参数"""
+    def momentum_update(self) -> None:
+        """Update the parameters of the momentum encoder"""
         for model_pair in self.model_pairs:
             for param, param_m in zip(
                 model_pair[0].parameters(), model_pair[1].parameters()
@@ -323,7 +336,9 @@ class SymTime(nn.Module):
                 )
 
     @torch.no_grad()
-    def enqueue_and_dequeue(self, time_features, sym_features):
+    def enqueue_and_dequeue(
+        self, time_features: torch.Tensor, sym_features: torch.Tensor
+    ) -> None:
         """Methods for controlling feature enqueue and dequeue"""
         batch_size = time_features.shape[0]
 

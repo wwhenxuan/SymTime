@@ -6,7 +6,6 @@ from models import SymTime_finetune as SymTime
 
 
 class Exp_Basic(object):
-
     def __init__(self, args):
         self.args = args
         self.device = self._acquire_device()

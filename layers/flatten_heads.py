@@ -29,6 +29,7 @@ class Flatten_Heads(nn.Module):
         self.individual = individual
         self.n_vars = n_vars
         self.patch_num = patch_num
+
         # Whether to take the [CLS] Token
         if cls_token is True:
             self.patch_num += 1
@@ -50,7 +51,7 @@ class Flatten_Heads(nn.Module):
         if self.individual is True:
             x_out = []
             for i in range(self.n_vars):
-                # 将某一通道的维数展平
+                # Flatten the dimensions of a specific channel.
                 z = self.flattens[i](x[:, i, :, :])
                 z = self.linears[i](z)
                 z = self.dropouts[i](z)

@@ -3,6 +3,7 @@
 Created on 2024/10/18 20:47
 @author: Whenxuan Wang
 @email: wwhenxuan@gmail.com
+@url: https://github.com/wwhenxuan/SymTime
 """
 from .function import Transpose
 from .function import get_activation_fn

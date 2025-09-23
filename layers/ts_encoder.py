@@ -39,6 +39,7 @@ class TSTEncoder(nn.Module):
         super().__init__()
         self.forward_layers = forward_layers
         self.W_P = nn.Linear(patch_len, d_model)
+
         # Positional encoding
         self.pe = PositionalEmbedding(d_model=d_model)
 

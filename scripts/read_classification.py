@@ -4,7 +4,6 @@ from tqdm import tqdm
 
 
 class DataStruct(object):
-
     def __init__(self, dataset_name):
         self.dataset_name = dataset_name
         self.accuracy = []
