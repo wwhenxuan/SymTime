@@ -16,7 +16,8 @@ from accelerate import Accelerator, DeepSpeedPlugin
 from accelerate import DistributedDataParallelKwargs
 
 from data_provider import PreTrainDataLoader
-from utils import ModelInterface, OptimInterface, get_criterion, PreTrainer
+from exp import Exp_Pretraining
+from utils import ModelInterface, OptimInterface, get_criterion
 
 os.environ["CURL_CA_BUNDLE"] = ""
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:64"
@@ -217,7 +218,7 @@ if __name__ == "__main__":
         model, optimizer, scheduler, data_loader
     )
 
-    trainer = PreTrainer(
+    trainer = Exp_Pretraining(
         args, model, optimizer, criterion, scheduler, accelerator, train_data
     )
     (

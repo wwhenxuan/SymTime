@@ -10,5 +10,4 @@ from .get_token import get_tokenizer
 
 from .optimizer_interface import OptimInterface
 from .model_interface import ModelInterface
-from .train_model import PreTrainer
 from .loss_fn import get_criterion

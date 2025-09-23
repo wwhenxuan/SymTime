@@ -13,7 +13,6 @@ from time import sleep
 
 import torch
 from torch import nn
-from torch import Tensor
 from torch.optim import Optimizer
 from torch.optim.lr_scheduler import LRScheduler
 from torch.utils.data import DataLoader
@@ -22,11 +21,11 @@ from typing import Callable, Tuple, Dict
 from colorama import Fore, Style
 from tqdm import tqdm
 
-from .tools import makedir
-from .logging import Logging
+from utils.tools import makedir
+from utils.logging import Logging
 
 
-class PreTrainer(object):
+class Exp_Pretraining(object):
     """用于模型预训练的接口"""
 
     def __init__(
@@ -38,7 +37,7 @@ class PreTrainer(object):
         scheduler: LRScheduler,
         accelerator: Accelerator,
         data_interface,
-    ):
+    ) -> None:
         self.args = args
         # 获取训练轮数
         self.num_epochs = args.num_epochs
@@ -67,16 +66,19 @@ class PreTrainer(object):
                 is_pretrain=True, logging_path=self.main_path, datasets=[]
             )
 
-    def fit(self) -> Tuple[Tensor, Tensor, Tensor, Tensor, Tensor]:
+    def fit(self) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
         """训练模型拟合数据"""
         self.accelerator.print(
             Fore.GREEN + "Starting SymTime Model Pretraining..." + Style.RESET_ALL
         )
+
+        # 记录SymTime在自监督预训练中使用的四种损失函数
         train_loss = torch.zeros(self.num_epochs, device=self.device)
         train_loss_mtm = torch.zeros(self.num_epochs, device=self.device)
         train_loss_mlm = torch.zeros(self.num_epochs, device=self.device)
         train_loss_t2s = torch.zeros(self.num_epochs, device=self.device)
         train_loss_s2t = torch.zeros(self.num_epochs, device=self.device)
+
         for idx, epoch in enumerate(range(1, self.num_epochs + 1), 0):
             """这里是开始了一个Epoch"""
             num_samples = 0  # 这一个Epoch中遍历的累计样本数目
@@ -154,10 +156,7 @@ class PreTrainer(object):
                 train_loss_t2s[idx],
                 train_loss_s2t[idx],
             )
-        # """这部分可以调整一下专门写一个函数来执行"""
-        # # 记录logging结果
-        # self.logging.dict2csv()
-        # self.logging.plot_results()
+
         return (
             train_loss,
             train_loss_mtm,
@@ -166,7 +165,7 @@ class PreTrainer(object):
             train_loss_s2t,
         )
 
-    def init_path(self) -> Tuple:
+    def init_path(self) -> Tuple[str, str]:
         """获取本次预训练保存模型和logging的地址"""
         # 保存模型的目录
         save_path = self.args.save_path
@@ -183,7 +182,7 @@ class PreTrainer(object):
         print(f"Attention the logging path is {main_path}")
         return main_path, params_path
 
-    def save_model(self, epoch: int, loss: Tensor) -> None:
+    def save_model(self, epoch: int, loss: torch.Tensor) -> None:
         """保存模型的参数"""
         if self.process_index == 0:
             self.accelerator.print(
@@ -200,11 +199,11 @@ class PreTrainer(object):
     def logging_epoch(
         self,
         epoch: int,
-        train_loss: Tensor,
-        train_loss_mtm: Tensor,
-        train_loss_mlm: Tensor,
-        train_loss_t2s: Tensor,
-        train_loss_s2t: Tensor,
+        train_loss: torch.Tensor,
+        train_loss_mtm: torch.Tensor,
+        train_loss_mlm: torch.Tensor,
+        train_loss_t2s: torch.Tensor,
+        train_loss_s2t: torch.Tensor,
     ) -> None:
         """记录一个Epoch的训练损失变化情况"""
         gather_train_loss = self.accelerator.gather(train_loss).mean().item()
@@ -228,16 +227,19 @@ def init_path(save_path) -> str:
     """获取本次预训练保存模型和logging的地址"""
     # 判断保存目录下有多少个文件
     num_folder = len(os.listdir(save_path))
+
     # 创建本次保存模型的文件夹
     folder_name = f"exp{num_folder + 1}"
     makedir(save_path, folder_name)
+
     # 更新保存目录的主要地址
     main_path = path.join(save_path, folder_name)
+
     # 创建保存模型参数的文件夹
     return main_path
 
 
-def check_loss(loss: Tensor, train_type: str) -> None:
+def check_loss(loss: torch.Tensor, train_type: str) -> None:
     """检查训练和验证的损失避免梯度爆炸"""
     if not torch.isfinite(loss):
         print(

@@ -4,6 +4,8 @@ from .exp_classification import Exp_Classification
 from .exp_imputation import Exp_Imputation
 from .exp_anomaly_detection import Exp_Anomaly_Detection
 
+from .exp_pretraining import Exp_Pretraining
+
 
 def Exp(task_name):
     """Choose the right exp for model training"""
