@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 """
+For the pre-training of SymTime using self-supervised learning.
+
 Created on 2024/10/9 17:20
 @author: Whenxuan Wang
 @email: wwhenxuan@gmail.com
 @url: https://github.com/wwhenxuan/SymTime
-用于SymTime网络预训练
 """
 import random
 import os
@@ -48,9 +49,20 @@ parser.add_argument(
     default=0.15,
     help="Masking ratio of natural language symbols",
 )
-parser.add_argument("--patch_len", type=int, default=16)
-parser.add_argument("--stride", type=int, default=None)
+parser.add_argument(
+    "--patch_len",
+    type=int,
+    default=16,
+    help="Length of each patch for data embedding in Transformer",
+)
+parser.add_argument(
+    "--stride",
+    type=int,
+    default=None,
+    help="Stride size for patching using the sliding windows. If None, non-overlapping patches are used",
+)
 
+# Data path related parameters
 parser.add_argument(
     "--data_path",
     type=str,
