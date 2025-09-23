@@ -1,72 +1,32 @@
-python -u fine_tuning.py \
-  --task_name "long_term_forecast" \
-  --model_id "Exchange" \
-  --data "custom" \
-  --root_path "./datasets/exchange_rate/" \
-  --data_path "exchange_rate.csv" \
-  --seq_len 96 \
-  --pred_len 96 \
-  --moving_avg True \
-  --forward_layers 3 \
-  --stride 8 \
-  --batch_size 8 \
-  --learning_rate 0.0001 \
-  --lradj "type2" \
-  --num_workers 5 \
-  --train_epochs 16 \
-  --patience 4 \
+export CUDA_VISIBLE_DEVICES=7
 
+for lradj in "type1" "type2" "cosine"
+do
+  for lr in 0.0001 0.00025 0.00075 0.001
+  do
+    for batch_size in 32 16 8 4
+    do
+      for stride in 4 8
+      do
+        python -u long_term_forecast.py \
+          --task_name "long_term_forecast" \
+          --dataset_name "Exchange" \
+          --data "custom" \
+          --root_path "./datasets/exchange_rate/" \
+          --data_path "exchange_rate.csv" \
+          --seq_len 336 \
+          --pred_len 96 \
+          --forward_layers 3 \
+          --stride $stride \
+          --batch_size $batch_size \
+          --learning_rate $lr \
+          --lradj $lradj \
+          --num_workers 5 \
+          --enc_in 8 \
+          --train_epochs 16 \
+          --patience 3 \
 
-python -u fine_tuning.py \
-  --task_name "long_term_forecast" \
-  --model_id "Exchange" \
-  --data "custom" \
-  --root_path "./datasets/exchange_rate/" \
-  --data_path "exchange_rate.csv" \
-  --seq_len 96 \
-  --pred_len 192 \
-  --moving_avg True \
-  --forward_layers 3 \
-  --stride 4 \
-  --batch_size 4 \
-  --learning_rate 0.0001 \
-  --lradj "type1" \
-  --num_workers 5 \
-  --train_epochs 16 \
-  --patience 4 \
-
-python -u fine_tuning.py \
-  --task_name "long_term_forecast" \
-  --model_id "Exchange" \
-  --data "custom" \
-  --root_path "./datasets/exchange_rate/" \
-  --data_path "exchange_rate.csv" \
-  --seq_len 96 \
-  --pred_len 336 \
-  --moving_avg True \
-  --forward_layers 3 \
-  --stride 1 \
-  --batch_size 8 \
-  --learning_rate 0.0001 \
-  --lradj "type1" \
-  --num_workers 5 \
-  --train_epochs 16 \
-  --patience 4 \
-
-python -u fine_tuning.py \
-  --task_name "long_term_forecast" \
-  --model_id "Exchange" \
-  --data "custom" \
-  --root_path "./datasets/exchange_rate/" \
-  --data_path "exchange_rate.csv" \
-  --seq_len 96 \
-  --pred_len 720 \
-  --moving_avg True \
-  --forward_layers 3 \
-  --stride 8 \
-  --batch_size 32 \
-  --learning_rate 0.0001 \
-  --lradj "type1" \
-  --num_workers 5 \
-  --train_epochs 16 \
-  --patience 4 \
+        done
+      done
+    done
+done
