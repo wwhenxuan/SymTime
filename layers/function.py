@@ -8,7 +8,7 @@ Created on 2024/9/16 10:29
 import torch
 from torch import nn
 from torch import Tensor
-from typing import Tuple
+from typing import Tuple, Union, Callable
 
 
 class Transpose(nn.Module):
@@ -30,8 +30,8 @@ def get_batch_norm(d_model: int) -> nn.Module:
     return nn.Sequential(Transpose(1, 2), nn.BatchNorm1d(d_model), Transpose(1, 2))
 
 
-def get_activation_fn(activation: str) -> nn.Module:
-    """选择使用的激活函数"""
+def get_activation_fn(activation: Union[str, Callable]) -> nn.Module:
+    """Select the activation function to use."""
     if callable(activation):
         return activation()
     elif activation.lower() == "relu":

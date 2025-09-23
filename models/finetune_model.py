@@ -3,28 +3,29 @@
 Created on 2024/9/30 21:27
 @author: Whenxuan Wang
 @email: wwhenxuan@gmail.com
+@url: https://github.com/wwhenxuan/SymTime
 """
 # from functools import partial
 import numpy as np
 import torch
 from torch import nn
-from torch import Tensor
 from layers import TSTEncoder
 from layers import Flatten_Heads
 from layers import series_decomp
 
 
 class SymTime(nn.Module):
-    """用于微调下游任务的网络架构"""
+    """Network architecture used for fine-tuning downstream tasks"""
 
     def __init__(self, args, configs) -> None:
         super().__init__()
-        # 要完成的下游任务
+        # Downstream tasks to be completed
         self.task_name = args.task_name
         self.patch_len = args.patch_len
         self.stride = args.stride
         self.padding_patch = args.padding_patch
-        # 计算能够划分出Patch的数目
+
+        # Calculate the number of patches that can be divided.
         self.patch_num = int((args.seq_len - self.patch_len) / self.stride + 1)
         if self.padding_patch is True:
             self.padding_patch_layer = nn.ReplicationPad1d((0, self.stride))
@@ -45,10 +46,10 @@ class SymTime(nn.Module):
 
         self.pretrain_path = args.pretrain_path
 
-        # 最后输出的Dropout
+        # the dropout for finally outputs
         self.out_dropout = args.out_dropout
 
-        # 创建时间序列数据的编码器
+        # An encoder for creating time series data
         self.time_encoder = TSTEncoder(
             patch_len=self.patch_len,
             n_layers=self.n_layers,
@@ -62,6 +63,7 @@ class SymTime(nn.Module):
             pre_norm=configs["pre_norm"],
             forward_layers=self.forward_layers,
         )
+        # load the pre-training params
         self.load_pretrained()
 
         # freeze some Transformer layers in time encoder
@@ -83,6 +85,7 @@ class SymTime(nn.Module):
                 ),
             )
 
+        # Develop an interface module for handling downstream tasks
         if (
             self.task_name == "long_term_forecast"
             or self.task_name == "short_term_forecast"
@@ -138,7 +141,7 @@ class SymTime(nn.Module):
         else:
             raise ValueError("task name wrong!")
 
-    def forward(self, x_enc: Tensor) -> Tensor:
+    def forward(self, x_enc: torch.Tensor) -> torch.Tensor:
         if (
             self.task_name == "long_term_forecast"
             or self.task_name == "short_term_forecast"
@@ -152,8 +155,9 @@ class SymTime(nn.Module):
             x_dec = self.anomaly_detection(x_enc=x_enc)
         return x_dec
 
-    def forcast(self, x_enc: Tensor) -> Tensor:
+    def forcast(self, x_enc: torch.Tensor) -> torch.Tensor:
         """Forward for long and short term forecasting"""
+
         # Normalization from Non-stationary Transformer
         means = x_enc.mean(1, keepdim=True).detach()
         x_enc = x_enc - means
@@ -177,7 +181,8 @@ class SymTime(nn.Module):
 
         x_enc = torch.reshape(x_enc, [batch_size * num_vars, patch_num, patch_len])
         x_dec = self.time_encoder(x_enc)
-        # 从通道独立恢复为原来的输入形式
+
+        # Restore the original input form independently from the channel
         x_dec = torch.reshape(
             x_dec, [batch_size, num_vars, x_dec.shape[-2], x_dec.shape[-1]]
         )
@@ -195,8 +200,9 @@ class SymTime(nn.Module):
 
         return x_dec
 
-    def classification(self, x_enc: Tensor) -> Tensor:
+    def classification(self, x_enc: torch.Tensor) -> torch.Tensor:
         """Forward for classification task"""
+
         # Normalization from Non-stationary Transformer
         means = x_enc.mean(1, keepdim=True).detach()
         x_enc = x_enc - means
@@ -207,23 +213,28 @@ class SymTime(nn.Module):
         # Adjusting the input channels through Conv1d
         if self.use_conv1d is True:
             x_enc = self.conv1d(x_enc)  # [batch_size, out_channels, seq_len]
+
         # do patching and reshape
         x_enc = self.patching(ts=x_enc)  # [batch_size, num_vars, patch_num, patch_len]
         batch_size, num_vars, patch_num, patch_len = x_enc.size()
+
         # Learning feature through the backbone of Transformer
         x_enc = torch.reshape(
             x_enc, shape=(batch_size, num_vars * patch_num, patch_len)
         )
         x_dec = self.time_encoder(x_enc)
+
         # Output processing
         x_dec = self.act(x_dec)
         x_dec = torch.reshape(x_dec, shape=(batch_size, -1))
         x_dec = self.ln_proj(x_dec)
         outputs = self.classifier(x_dec)
+
         return outputs
 
-    def imputation(self, x_enc: Tensor) -> Tensor:
-        """进行时间序列填补任务的接口"""
+    def imputation(self, x_enc: torch.Tensor) -> torch.Tensor:
+        """The interface for performing time series imputation tasks"""
+
         #  pre-interpolation from Peri-midFormer
         x_enc_np = x_enc.detach().cpu().numpy()
         zero_indices = np.where(x_enc_np[:, :, :] == 0)
@@ -265,6 +276,7 @@ class SymTime(nn.Module):
         if self.use_avg is True:
             seasonal_part, trend_part = self.decompsition(x_enc)
             x_enc = seasonal_part.permute(0, 2, 1)
+
             # Mapping trend part to target length
             trend_part = trend_part.permute(0, 2, 1)
             trend_part = self.projection_trend(trend_part)
@@ -275,15 +287,17 @@ class SymTime(nn.Module):
         # do patching and reshape
         x_enc = self.patching(ts=x_enc)  # [batch_size, n_vars, patch_num, patch_len]
         batch_size, n_vars, patch_num, patch_len = x_enc.size()
-        # 以通道独立的方式来处理数据
+
+        # Process data in a channel-independent manner
         x_enc = torch.reshape(x_enc, shape=(batch_size * n_vars, patch_num, patch_len))
-        # 经过大模型正向传播部分
+
+        # After the large model forward propagation part
         x_dec = self.time_encoder(x_enc)  # [batch_size * n_vars, patch_num, d_model]
         x_dec = torch.reshape(
             x_dec, shape=(batch_size, n_vars, x_dec.size(-2), self.d_model)
         )
 
-        # 恢复为模型原本的输出维度
+        # Restore the original output dimension of the model
         x_dec = self.flatten_head(x_dec).permute(
             0, 2, 1
         )  # [batch_size, pred_len, num_vars]
@@ -295,10 +309,12 @@ class SymTime(nn.Module):
         # De-Normalization from Non-stationary Transformer
         x_dec = x_dec * (stdev[:, 0, :].unsqueeze(1).repeat(1, self.seq_len, 1))
         x_dec = x_dec + (means[:, 0, :].unsqueeze(1).repeat(1, self.seq_len, 1))
+
         return x_dec
 
-    def anomaly_detection(self, x_enc: Tensor) -> Tensor:
-        """进行异常检测的接口"""
+    def anomaly_detection(self, x_enc: torch.Tensor) -> torch.Tensor:
+        """The interface for time series anomaly detection"""
+
         # Normalization from Non-stationary Transformer
         means = x_enc.mean(1, keepdim=True).detach()
         x_enc = x_enc - means
@@ -319,15 +335,17 @@ class SymTime(nn.Module):
         # do patching and reshape
         x_enc = self.patching(ts=x_enc)  # [batch_size, n_vars, patch_num, patch_len]
         batch_size, n_vars, patch_num, patch_len = x_enc.size()
-        # 以通道独立的方式来处理数据
+
+        # Process data in a channel-independent manner
         x_enc = torch.reshape(x_enc, shape=(batch_size * n_vars, patch_num, patch_len))
-        # 经过大模型正向传播部分
+
+        # After the large model forward propagation part
         x_dec = self.time_encoder(x_enc)  # [batch_size * n_vars, patch_num, d_model]
         x_dec = torch.reshape(
             x_dec, [batch_size, n_vars, x_dec.shape[-2], x_dec.shape[-1]]
         )
 
-        # 恢复为模型原本的输出维度
+        # Restore the original output dimension of the model
         x_dec = self.flatten_head(x_dec).permute(
             0, 2, 1
         )  # [batch_size, pred_len, num_vars]
@@ -342,15 +360,15 @@ class SymTime(nn.Module):
 
         return x_dec
 
-    def patching(self, ts: Tensor) -> Tensor:
-        """进行Patch的划分"""
+    def patching(self, ts: torch.Tensor) -> torch.Tensor:
+        """Divide the time series into patch"""
         if self.padding_patch is True:
             ts = self.padding_patch_layer(ts)
         ts = ts.unfold(dimension=-1, size=self.patch_len, step=self.stride)
         return ts
 
     def load_pretrained(self) -> None:
-        """加载预训练模型"""
+        """Loading pre-trained model parameters"""
         print("Now loading pretrained model params...")
         self.time_encoder.load_state_dict(
             torch.load(self.pretrain_path, weights_only=True)

@@ -16,6 +16,7 @@ class PositionalEmbedding(nn.Module):
 
     def __init__(self, d_model: int, max_len: int = 5000) -> None:
         super(PositionalEmbedding, self).__init__()
+
         # Calculate the positional encoding once in the logarithmic space.
         pe = torch.zeros(
             max_len, d_model

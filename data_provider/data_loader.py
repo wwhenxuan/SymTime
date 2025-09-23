@@ -620,7 +620,6 @@ class SMAPSegLoader(Dataset):
         print("train:", self.train.shape)
 
     def __len__(self):
-
         if self.flag == "train":
             return (self.train.shape[0] - self.win_size) // self.step + 1
         elif self.flag == "val":
