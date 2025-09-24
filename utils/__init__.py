@@ -9,5 +9,7 @@ from .tools import concat_all_gather
 from .get_token import get_tokenizer
 
 from .optimizer_interface import OptimInterface
+
 from .model_interface import ModelInterface
+
 from .loss_fn import get_criterion
