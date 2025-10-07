@@ -13,13 +13,15 @@ import random
 import numpy as np
 
 parser = argparse.ArgumentParser(description="SymTime-Imputation")
+
 # basic config
 parser.add_argument("--task_name", type=str, default="imputation")
 parser.add_argument("--dataset_name", type=str, default="ETTh1", help="model id")
 parser.add_argument("--model", type=str, default="SymTime")
 parser.add_argument(
-    "--pretrain_path", type=str, default="./modules/params/finetuning.pth"
+    "--pretrain_path", type=str, default="./models/params/finetuning.pth"
 )
+
 # data loader
 parser.add_argument("--data", type=str, default="ETTh1", help="datasets type")
 parser.add_argument(
@@ -47,7 +49,8 @@ parser.add_argument(
     default="./checkpoints/",
     help="location of model checkpoints",
 )
-# inputation task
+
+# imputation task
 parser.add_argument("--seq_len", type=int, default=96, help="input sequence length")
 parser.add_argument("--mask_rate", type=float, default=0.125, help="mask ratio")
 parser.add_argument("--dropout", type=float, default=0.1, help="dropout")
@@ -57,17 +60,18 @@ parser.add_argument(
     default="timeF",
     help="time features encoding, options:[timeF, fixed, learned]",
 )
+
 # do patching
 parser.add_argument(
     "--forward_layers", type=int, default=6, help="the feed forward layers numbers"
 )
-parser.add_argument("--patch_len", type=int, default=16, help="划分Patch的长度")
-parser.add_argument("--stride", type=int, default=8, help="划分Patch的步长")
+parser.add_argument("--patch_len", type=int, default=16, help="Divide the length of the patch")
+parser.add_argument("--stride", type=int, default=8, help="Patch division step size")
 parser.add_argument(
-    "--padding_patch", type=bool, default=True, help="是否填充最后一个Patch"
+    "--padding_patch", type=bool, default=True, help="Whether to fill the last Patch"
 )
 parser.add_argument(
-    "--out_dropout", type=float, default=0.1, help="模型最后输出的dropout"
+    "--out_dropout", type=float, default=0.1, help="Dropout of the final output of the model"
 )
 parser.add_argument(
     "--use_avg", type=bool, default=True, help="use moving average decomposition"
@@ -81,6 +85,7 @@ parser.add_argument(
     default=False,
     help="whether to forecast the final output individually",
 )
+
 # optimization
 parser.add_argument("--enc_in", type=int, default=7, help="encoder input size")
 parser.add_argument(
@@ -104,6 +109,7 @@ parser.add_argument(
     help="use automatic mixed precision training",
     default=False,
 )
+
 # GPU
 parser.add_argument("--use_gpu", type=bool, default=True, help="use gpu")
 parser.add_argument("--gpu", type=int, default=0, help="gpu")
@@ -113,6 +119,7 @@ parser.add_argument(
 parser.add_argument(
     "--devices", type=str, default="0,1,2,3", help="device ids of multile gpus"
 )
+
 # metrics (dtw)
 parser.add_argument(
     "--use_dtw",
@@ -120,6 +127,7 @@ parser.add_argument(
     default=False,
     help="the controller of using dtw metric (dtw is time consuming, not suggested unless necessary)",
 )
+
 # Augmentation
 parser.add_argument(
     "--augmentation_ratio", type=int, default=0, help="How many times to augment"
@@ -127,9 +135,11 @@ parser.add_argument(
 parser.add_argument("--seed", type=int, default=2025, help="Randomization seed")
 
 args = parser.parse_args()
+
 # args.use_gpu = True if torch.cuda.is_available() and args.use_gpu else False
 args.use_gpu = True if torch.cuda.is_available() else False
 
+# Set the random seed for reproducibility
 random.seed(args.seed)
 torch.manual_seed(args.seed)
 np.random.seed(args.seed)
@@ -167,5 +177,4 @@ if __name__ == "__main__":
 
     print(">>>>>>>testing : {}<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<".format(setting))
     exp.test(setting)
-    # 在开始训练之前可以运行
     torch.cuda.empty_cache()
