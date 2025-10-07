@@ -17,6 +17,8 @@ Externally passed variables:
 - length: The length of the generated S2 data;
 - num_threads: The number of threads to use;
 
+before running this code, please ensure that the S2Generator package is installed.
+pip install s2generator
 
 Created on 2025/09/02 20:14:50
 @author: Whenxuan Wang
