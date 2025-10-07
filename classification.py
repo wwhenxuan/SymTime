@@ -149,7 +149,7 @@ args = parser.parse_args()
 # args.use_gpu = True if torch.cuda.is_available() and args.use_gpu else False
 args.use_gpu = True if torch.cuda.is_available() else False
 
-# 设置随机种子
+# Set the random seed for reproducibility
 random.seed(args.seed)
 torch.manual_seed(args.seed)
 np.random.seed(args.seed)
