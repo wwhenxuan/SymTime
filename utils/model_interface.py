@@ -57,6 +57,6 @@ class ModelInterface(object):
         train_params = []
         for params in self.model.parameters():
             if params.requires_grad is True:
-                # 不计算梯度的参数为冻结参数
+                # Parameters for which gradients are not calculated are frozen parameters
                 train_params.append(params)
         return train_params

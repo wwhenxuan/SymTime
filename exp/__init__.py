@@ -4,7 +4,7 @@ from .exp_classification import Exp_Classification
 from .exp_imputation import Exp_Imputation
 from .exp_anomaly_detection import Exp_Anomaly_Detection
 
-from .exp_pretraining import Exp_Pretraining
+from .exp_pretraining import Exp_PreTraining
 
 
 def Exp(task_name):

@@ -17,7 +17,7 @@ from accelerate import Accelerator, DeepSpeedPlugin
 from accelerate import DistributedDataParallelKwargs
 
 from data_provider import PreTrainDataLoader
-from exp import Exp_Pretraining
+from exp import Exp_PreTraining
 from utils import ModelInterface, OptimInterface, get_criterion
 
 os.environ["CURL_CA_BUNDLE"] = ""
@@ -230,7 +230,7 @@ if __name__ == "__main__":
         model, optimizer, scheduler, data_loader
     )
 
-    trainer = Exp_Pretraining(
+    trainer = Exp_PreTraining(
         args, model, optimizer, criterion, scheduler, accelerator, train_data
     )
     (

@@ -24,7 +24,7 @@ from utils.tools import makedir
 from utils.logging import Logging
 
 
-class Exp_Pretraining(object):
+class Exp_PreTraining(object):
     """The Interface for the pre-training of SymTime"""
 
     def __init__(
