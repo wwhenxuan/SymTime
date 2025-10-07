@@ -22,7 +22,6 @@ This code is the official PyTorch implementation of our NeurIPS'25 paper: **Synt
 
 ### Installation
 
-
 First create a Python virtual environment (preferably version 3.10.15), then install the required dependencies by running the following command:
 
 ```
@@ -48,11 +47,19 @@ sh ./scripts/multivariate_detection/detect_score/MSL_script/CATCH.sh
 
 ## Results
 
+### Main Results
+
+
+### Benchmark Results
+
 Extensive experiments on 10 real-world datasets and 12 synthetic datasets demonstrate that CATCH achieves state-of-the-art performance. We show the main results of all the 10 real-world datasets, and report the mean results of the 6 types of synthetic datasets:
 
-<div align="center">
-<img alt="exp" src="docs/experiment.png" width="100%"/>
+<div style="text-align: center;">
+    <img src="configs/images/finetune_benchmark_results.png" alt="benchmark" style="zoom:80%;" />
 </div>
+
+
+### 
 
 
 ## Setup for Running Baseline Models
@@ -64,28 +71,13 @@ If you want to test all baseline models, please refer to the Time Series Anomaly
 If you find this repo useful, please cite our paper.
 
 ```
-@inproceedings{wu2024catch,
-  title     = {{CATCH}: Channel-Aware multivariate Time Series Anomaly Detection via Frequency Patching},
-  author    = {Wu, Xingjian and Qiu, Xiangfei and Li, Zhengyu and Wang, Yihang and Hu, Jilin and Guo, Chenjuan and Xiong, Hui and Yang, Bin},
-  booktitle = {ICLR},
-  year      = {2025}
-}
 
-@inproceedings{qiu2025tab,
-title      = {{TAB}: Unified Benchmarking of Time Series Anomaly Detection Methods},
-author     = {Xiangfei Qiu and Zhe Li and Wanghui Qiu and Shiyan Hu and Lekui Zhou and Xingjian Wu and Zhengyu Li and Chenjuan Guo and Aoying Zhou and Zhenli Sheng and Jilin Hu and Christian S. Jensen and Bin Yang},
-booktitle  = {Proc. {VLDB} Endow.},
-year       = {2025}
-}
+
 ```
 
 
 ## Contact
 
-If you have any questions or suggestions, feel free to contact:
-- [Xingjian Wu](https://ccloud0525.github.io/)  (xjwu@stu.ecnu.edu.cn)
-- [Xiangfei Qiu](https://qiu69.github.io/) (xfqiu@stu.ecnu.edu.cn)
 
-Or describe it in Issues.
 
 3.10.15
