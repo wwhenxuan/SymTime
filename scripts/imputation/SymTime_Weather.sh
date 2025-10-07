@@ -44,7 +44,7 @@ python -u imputation.py \
   --forward_layers $forward_layers \ 
   --stride $stride \ 
   --batch_size 4 \ 
-  --learning_rate lr \ 
+  --learning_rate $lr \ 
   --lradj $lradj \
 
 
