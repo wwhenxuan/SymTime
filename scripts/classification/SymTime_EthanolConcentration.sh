@@ -1,13 +1,15 @@
-python -u fine_tuning.py \
-  --task_name "classification" \
-  --dataset_name "EthanolConcentration" \
-  --data "UEA" \
-  --root_path "./datasets/EthanolConcentration" \
-  --forward_layers 1 \
-  --conv1d True \
-  --out_channels 12 \
-  --stride 16 \
-  --batch_size 4 \
-  --learning_rate 0.0005 \
-  --num_workers 0 \
-  --lradj "type1" \
+export CUDA_VISIBLE_DEVICES=5
+
+
+python -u classification.py \ 
+  --task_name "classification" \ 
+  --dataset_name "EthanolConcentration" \ 
+  --data "UEA" \ 
+  --root_path "./datasets/EthanolConcentration" \ 
+  --forward_layers 2 \ 
+  --out_channels 16 \ 
+  --stride 16 \ 
+  --batch_size 12 \ 
+  --learning_rate 0.0003 \ 
+  --num_workers 0 \ 
+  --lradj "type1" \  

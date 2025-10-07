@@ -1,4 +1,4 @@
-export CUDA_VISIBLE_DEVICES=5
+
 
 for forward_layers in 3 1 2
 do
@@ -8,18 +8,7 @@ do
     do
       for aj in "type1" "type2" "cosine"
       do
-        python -u classification.py \
-          --task_name "classification" \
-          --dataset_name "EthanolConcentration" \
-          --data "UEA" \
-          --root_path "./datasets/EthanolConcentration" \
-          --forward_layers $forward_layers \
-          --out_channels 16 \
-          --stride 16 \
-          --batch_size $batch_size \
-          --learning_rate $lr \
-          --num_workers 0 \
-          --lradj $aj \
+        
 
       done
     done
