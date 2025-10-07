@@ -3,6 +3,7 @@
 Created on 2024/10/19 21:20
 @author: Whenxuan Wang
 @email: wwhenxuan@gmail.com
+@url: https://github.com/wwhenxuan/SymTime
 """
 import argparse
 import torch
@@ -13,15 +14,16 @@ import numpy as np
 
 
 parser = argparse.ArgumentParser(description="SymTime-Anomaly_Detection")
+
 # basic config
 parser.add_argument("--task_name", type=str, default="anomaly_detection")
 parser.add_argument("--is_training", type=int, default=1, help="status")
 parser.add_argument("--dataset_name", type=str, default="SWAT", help="model id")
 parser.add_argument("--model", type=str, default="SymTime")
 parser.add_argument(
-    "--pretrain_path", type=str, default="./modules/params/finetuning.pth"
+    "--pretrain_path", type=str, default="./models/params/finetuning.pth"
 )
-parser.add_argument("--pretrain_id", type=str, default="norm")
+parser.add_argument("--pretrain_id", type=str, default="zero")
 
 # data loader
 parser.add_argument("--data", type=str, default="SWAT", help="datasets type")
@@ -62,13 +64,20 @@ parser.add_argument("--anomaly_ratio", type=float, default=0.5)
 parser.add_argument(
     "--forward_layers", type=int, default=3, help="the feed forward layers numbers"
 )
-parser.add_argument("--patch_len", type=int, default=16, help="划分Patch的长度")
-parser.add_argument("--stride", type=int, default=1, help="划分Patch的步长")
 parser.add_argument(
-    "--padding_patch", type=bool, default=True, help="是否填充最后一个Patch"
+    "--patch_len", type=int, default=16, help="Divide the length of the patch"
 )
 parser.add_argument(
-    "--out_dropout", type=float, default=0.1, help="模型最后输出的dropout"
+    "--stride", type=int, default=1, help="The division step size of patching"
+)
+parser.add_argument(
+    "--padding_patch", type=bool, default=True, help="Whether to fill the last Patch"
+)
+parser.add_argument(
+    "--out_dropout",
+    type=float,
+    default=0.1,
+    help="Dropout of the final output of the model",
 )
 parser.add_argument(
     "--use_avg", type=bool, default=True, help="use moving average decomposition"
@@ -192,5 +201,4 @@ if __name__ == "__main__":
     exp.train(setting)
     print(">>>>>>>testing : {}<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<".format(setting))
     exp.test(setting)
-    # 在开始训练之前可以运行
     torch.cuda.empty_cache()
