@@ -194,6 +194,7 @@ parser.add_argument(
 
 args = parser.parse_args()
 
+# Set the random seed for reproducibility
 fix_seed = 2025
 random.seed(fix_seed)
 torch.manual_seed(fix_seed)
