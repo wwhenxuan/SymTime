@@ -13,16 +13,19 @@ import random
 import numpy as np
 
 parser = argparse.ArgumentParser(description="SymTime-Long_Term_forecast")
+
 # basic config
 parser.add_argument("--task_name", type=str, default="long_term_forecast")
 parser.add_argument("--is_training", type=int, default=1, help="status")
 parser.add_argument("--dataset_name", type=str, default="Exchange", help="model id")
 parser.add_argument("--model", type=str, default="SymTime")
 
+# load pre-trained model
 parser.add_argument(
-    "--pretrain_path", type=str, default="./modules/params/finetuning.pth"
+    "--pretrain_path", type=str, default="./models/params/finetuning.pth"
 )
-parser.add_argument("--pretrain_id", type=str, default="norm")
+parser.add_argument("--pretrain_id", type=str, default="zero")
+
 # data loader
 parser.add_argument("--data", type=str, default="custom", help="datasets type")
 parser.add_argument(
@@ -55,17 +58,23 @@ parser.add_argument(
     default="./checkpoints/",
     help="location of model checkpoints",
 )
+
 # do patching
 parser.add_argument(
     "--forward_layers", type=int, default=3, help="the feed forward layers numbers"
 )
-parser.add_argument("--patch_len", type=int, default=16, help="划分Patch的长度")
-parser.add_argument("--stride", type=int, default=8, help="划分Patch的步长")
 parser.add_argument(
-    "--padding_patch", type=bool, default=True, help="是否填充最后一个Patch"
+    "--patch_len", type=int, default=16, help="Divide the length of the patch"
+)
+parser.add_argument("--stride", type=int, default=8, help="Patch division step size")
+parser.add_argument(
+    "--padding_patch", type=bool, default=True, help="Whether to fill the last Patch"
 )
 parser.add_argument(
-    "--out_dropout", type=float, default=0.1, help="模型最后输出的dropout"
+    "--out_dropout",
+    type=float,
+    default=0.1,
+    help="Dropout of the final output of the model",
 )
 parser.add_argument(
     "--use_avg", type=bool, default=True, help="use moving average decomposition"
@@ -79,6 +88,7 @@ parser.add_argument(
     default=False,
     help="whether to forecast the final output individually",
 )
+
 # forecasting task
 parser.add_argument("--seq_len", type=int, default=96, help="input sequence length")
 parser.add_argument("--label_len", type=int, default=48, help="start token length")
@@ -134,6 +144,7 @@ parser.add_argument(
     help="use automatic mixed precision training",
     default=False,
 )
+
 # GPU
 parser.add_argument("--use_gpu", type=bool, default=True, help="use gpu")
 parser.add_argument("--gpu", type=int, default=0, help="gpu")
@@ -156,9 +167,11 @@ parser.add_argument(
 parser.add_argument("--seed", type=int, default=2025, help="Randomization seed")
 
 args = parser.parse_args()
+
 # args.use_gpu = True if torch.cuda.is_available() and args.use_gpu else False
 args.use_gpu = True if torch.cuda.is_available() else False
 
+# Set the random seed for reproducibility
 random.seed(args.seed)
 torch.manual_seed(args.seed)
 np.random.seed(args.seed)
@@ -198,5 +211,4 @@ if __name__ == "__main__":
     exp.train(setting)
     print(">>>>>>>testing : {}<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<".format(setting))
     exp.test(setting)
-    # 在开始训练之前可以运行
     torch.cuda.empty_cache()

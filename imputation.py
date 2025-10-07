@@ -65,13 +65,18 @@ parser.add_argument(
 parser.add_argument(
     "--forward_layers", type=int, default=6, help="the feed forward layers numbers"
 )
-parser.add_argument("--patch_len", type=int, default=16, help="Divide the length of the patch")
+parser.add_argument(
+    "--patch_len", type=int, default=16, help="Divide the length of the patch"
+)
 parser.add_argument("--stride", type=int, default=8, help="Patch division step size")
 parser.add_argument(
     "--padding_patch", type=bool, default=True, help="Whether to fill the last Patch"
 )
 parser.add_argument(
-    "--out_dropout", type=float, default=0.1, help="Dropout of the final output of the model"
+    "--out_dropout",
+    type=float,
+    default=0.1,
+    help="Dropout of the final output of the model",
 )
 parser.add_argument(
     "--use_avg", type=bool, default=True, help="use moving average decomposition"

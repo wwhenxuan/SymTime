@@ -14,6 +14,7 @@ import random
 import numpy as np
 
 parser = argparse.ArgumentParser(description="SymTime-Short_Term_Forecasting")
+
 # basic config
 parser.add_argument("--task_name", type=str, default="short_term_forecast")
 parser.add_argument("--is_training", type=int, default=1, help="status")
@@ -21,9 +22,10 @@ parser.add_argument("--dataset_name", type=str, default=f"m4", help="model id")
 parser.add_argument("--model", type=str, default=f"SymTime")
 parser.add_argument("--model_id", type=str, default=f"ETTh1")
 parser.add_argument(
-    "--pretrain_path", type=str, default="./modules/params/finetuning.pth"
+    "--pretrain_path", type=str, default="./models/params/finetuning.pth"
 )
-parser.add_argument("--pretrain_id", type=str, default="norm")
+parser.add_argument("--pretrain_id", type=str, default="zero")
+
 # data loader
 parser.add_argument("--data", type=str, default="m4", help="dataset type")
 parser.add_argument(
@@ -89,6 +91,7 @@ parser.add_argument(
 )
 parser.add_argument("--activation", type=str, default="gelu", help="activation")
 parser.add_argument("--individual", type=bool, default=False)
+
 # optimization
 parser.add_argument(
     "--num_workers", type=int, default=1, help="data loader num workers"
@@ -136,6 +139,7 @@ parser.add_argument("--seed", type=int, default=2025, help="Randomization seed")
 args = parser.parse_args()
 args.use_gpu = True if torch.cuda.is_available() else False
 
+# Set the random seed for reproducibility
 random.seed(args.seed)
 torch.manual_seed(args.seed)
 np.random.seed(args.seed)
