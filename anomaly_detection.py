@@ -3,7 +3,6 @@
 Created on 2024/10/19 21:20
 @author: Whenxuan Wang
 @email: wwhenxuan@gmail.com
-@url: https://github.com/wwhenxuan/SymTime
 """
 import argparse
 import torch
@@ -11,6 +10,7 @@ from exp import Exp_Anomaly_Detection
 from utils.print_args import print_args
 import random
 import numpy as np
+
 
 parser = argparse.ArgumentParser(description="SymTime-Anomaly_Detection")
 # basic config
@@ -21,7 +21,8 @@ parser.add_argument("--model", type=str, default="SymTime")
 parser.add_argument(
     "--pretrain_path", type=str, default="./modules/params/finetuning.pth"
 )
-parser.add_argument("--pretrain_id", type=str, default="zero")
+parser.add_argument("--pretrain_id", type=str, default="norm")
+
 # data loader
 parser.add_argument("--data", type=str, default="SWAT", help="datasets type")
 parser.add_argument(

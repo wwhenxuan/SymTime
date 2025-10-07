@@ -1,4 +1,7 @@
-python -u fine_tuning.py \
+export CUDA_VISIBLE_DEVICES=3
+
+
+python -u classification.py \
   --task_name "classification" \
   --dataset_name "PEMS-SF" \
   --data "UEA" \
@@ -11,3 +14,4 @@ python -u fine_tuning.py \
   --learning_rate 0.0001 \
   --num_workers 0 \
   --lradj "type1" \
+  --patience 10 \

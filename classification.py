@@ -3,7 +3,6 @@
 Created on 2024/10/20 13:05
 @author: Whenxuan Wang
 @email: wwhenxuan@gmail.com
-@url: https://github.com/wwhenxuan/SymTime
 """
 import argparse
 import torch
@@ -22,7 +21,7 @@ parser.add_argument("--model", type=str, default="SymTime")
 parser.add_argument(
     "--pretrain_path", type=str, default="./modules/params/finetuning.pth"
 )
-parser.add_argument("--pretrain_id", type=str, default="zero")
+parser.add_argument("--pretrain_id", type=str, default="norm")
 
 # data loader
 parser.add_argument("--data", type=str, default="UEA", help="datasets type")
@@ -103,7 +102,7 @@ parser.add_argument(
     "--num_workers", type=int, default=0, help="data loader num workers"
 )
 parser.add_argument("--itr", type=int, default=1, help="experiments times")
-parser.add_argument("--train_epochs", type=int, default=50, help="train epochs")
+parser.add_argument("--train_epochs", type=int, default=128, help="train epochs")
 parser.add_argument(
     "--batch_size", type=int, default=16, help="batch size of train input data"
 )

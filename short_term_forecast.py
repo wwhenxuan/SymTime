@@ -3,7 +3,6 @@
 Created on 2024/10/20 10:59
 @author: Whenxuan Wang
 @email: wwhenxuan@gmail.com
-@url: https://github.com/wwhenxuan/SymTime
 """
 import os
 import argparse
@@ -14,7 +13,6 @@ import random
 import numpy as np
 
 parser = argparse.ArgumentParser(description="SymTime-Short_Term_Forecasting")
-
 # basic config
 parser.add_argument("--task_name", type=str, default="short_term_forecast")
 parser.add_argument("--is_training", type=int, default=1, help="status")
@@ -24,8 +22,7 @@ parser.add_argument("--model_id", type=str, default=f"ETTh1")
 parser.add_argument(
     "--pretrain_path", type=str, default="./modules/params/finetuning.pth"
 )
-parser.add_argument("--pretrain_id", type=str, default="zero")
-
+parser.add_argument("--pretrain_id", type=str, default="norm")
 # data loader
 parser.add_argument("--data", type=str, default="m4", help="dataset type")
 parser.add_argument(
