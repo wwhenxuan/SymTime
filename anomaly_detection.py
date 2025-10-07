@@ -164,6 +164,7 @@ parser.add_argument("--seed", type=int, default=2025, help="Randomization seed")
 args = parser.parse_args()
 args.use_gpu = True if torch.cuda.is_available() else False
 
+# Set the random seed for reproducibility
 random.seed(args.seed)
 torch.manual_seed(args.seed)
 np.random.seed(args.seed)
