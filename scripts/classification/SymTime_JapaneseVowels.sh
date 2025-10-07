@@ -1,4 +1,4 @@
-python -u fine_tuning.py \
+python -u classification.py \
   --task_name "classification" \
   --dataset_name "JapaneseVowels" \
   --data "UEA" \

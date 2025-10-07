@@ -12,4 +12,4 @@ python -u classification.py \
   --batch_size 12 \ 
   --learning_rate 0.0003 \ 
   --num_workers 0 \ 
-  --lradj "type1" \  
+  --lradj "type1" \   
