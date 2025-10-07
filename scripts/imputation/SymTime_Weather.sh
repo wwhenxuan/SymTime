@@ -1,59 +1,62 @@
-python -u fine_tuning.py \
-  --task_name "imputation" \
-  --dataset_name "weather" \
-  --data "custom" \
-  --root_path "./datasets/weather/" \
-  --data_path "weather.csv" \
-  --mask_rate 0.125 \
-  --moving_avg 1 \
-  --forward_layers 2 \
-  --individual 0 \
-  --stride 1 \
-  --batch_size 8 \
-  --learning_rate 0.0001 \
-  --lradj "type1" \
+export CUDA_VISIBLE_DEVICES=0
 
-python -u fine_tuning.py \
-  --task_name "imputation" \
-  --dataset_name "weather" \
-  --data "custom" \
-  --root_path "./datasets/weather/" \
-  --data_path "weather.csv" \
-  --mask_rate 0.25 \
-  --moving_avg 1 \
-  --forward_layers 2 \
-  --individual 0 \
-  --stride 1 \
-  --batch_size 32 \
-  --learning_rate 0.00025 \
-  --lradj "type1" \
+forward_layers = 2
+stride = 1
+lr = 0.0001
+lradj = "type1"
 
-python -u fine_tuning.py \
-  --task_name "imputation" \
-  --dataset_name "weather" \
-  --data "custom" \
-  --root_path "./datasets/weather/" \
-  --data_path "weather.csv" \
-  --mask_rate 0.375 \
-  --moving_avg 1 \
-  --forward_layers 2 \
-  --individual 0 \
-  --stride 1 \
-  --batch_size 4 \
-  --learning_rate 0.0001 \
-  --lradj "type1" \
 
-python -u fine_tuning.py \
-  --task_name "imputation" \
-  --dataset_name "weather" \
-  --data "custom" \
-  --root_path "./datasets/weather/" \
-  --data_path "weather.csv" \
-  --mask_rate 0.125 \
-  --moving_avg 1 \
-  --forward_layers 2 \
-  --individual 0 \
-  --stride 1 \
-  --batch_size 4 \
-  --learning_rate 0.0001 \
+python -u imputation.py \ 
+  --task_name "imputation" \ 
+  --dataset_name "weather" \ 
+  --data "weather" \ 
+  --root_path "./datasets/weather/" \ 
+  --data_path "weather.csv" \ 
+  --mask_rate 0.125 \ 
+  --forward_layers $forward_layers \ 
+  --stride $stride \ 
+  --batch_size 8 \ 
+  --learning_rate $lr \ 
+  --lradj $lradj \
+
+
+python -u imputation.py \ 
+  --task_name "imputation" \ 
+  --dataset_name "weather" \ 
+  --data "weather" \ 
+  --root_path "./datasets/weather/" \ 
+  --data_path "weather.csv" \ 
+  --mask_rate 0.25 \ 
+  --forward_layers $forward_layers \ 
+  --stride $stride \ 
+  --batch_size 32 \ 
+  --learning_rate 0.00025 \ 
+  --lradj $lradj \
+
+
+python -u imputation.py \ 
+  --task_name "imputation" \ 
+  --dataset_name "weather" \ 
+  --data "weather" \ 
+  --root_path "./datasets/weather/" \ 
+  --data_path "weather.csv" \ 
+  --mask_rate 0.375 \ 
+  --forward_layers $forward_layers \ 
+  --stride $stride \ 
+  --batch_size 4 \ 
+  --learning_rate lr \ 
+  --lradj $lradj \
+
+
+python -u imputation.py \ 
+  --task_name "imputation" \ 
+  --dataset_name "weather" \ 
+  --data "weather" \ 
+  --root_path "./datasets/weather/" \ 
+  --data_path "weather.csv" \ 
+  --mask_rate 0.50 \ 
+  --forward_layers $forward_layers \ 
+  --stride $stride \ 
+  --batch_size 4 \ 
+  --learning_rate $lr \ 
   --lradj "type2" \
