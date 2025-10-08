@@ -369,7 +369,7 @@ class SymTime(nn.Module):
 
     def load_pretrained(self) -> None:
         """Loading pre-trained model parameters"""
-        print("Now loading pretrained model params...")
+        print("Now loading pre-trained model params...")
         self.time_encoder.load_state_dict(
             torch.load(self.pretrain_path, weights_only=True)
         )
