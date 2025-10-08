@@ -59,7 +59,7 @@ bash ./scripts/classification/SymTime_EthanolConcentration.sh
 
 bash ./scripts/imputation/SymTime_ECL.sh
 
-bash ./scripts/anomaly_detection/test/MSL.sh
+bash ./scripts/anomaly_detection/MSL.sh
 ```
 
 ## 📊 Results
