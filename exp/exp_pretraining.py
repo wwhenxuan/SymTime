@@ -80,7 +80,7 @@ class Exp_PreTraining(object):
     ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
         """Training model to fit data"""
         self.accelerator.print(
-            Fore.GREEN + "Starting SymTime Model Pretraining..." + Style.RESET_ALL
+            Fore.GREEN + "Starting SymTime Model Pre-training..." + Style.RESET_ALL
         )
 
         # Record the four loss functions used by SymTime in self-supervised pre-training
@@ -98,7 +98,7 @@ class Exp_PreTraining(object):
             for ii in range(1, len(self.data_interface) + 1):
                 """In one Epoch, all data must be traversed and read"""
                 self.accelerator.print(
-                    Fore.RED + "Now is loading pretraining data" + Style.RESET_ALL,
+                    Fore.RED + "Now is loading pre-training data" + Style.RESET_ALL,
                     end=" -> ",
                 )
                 train_loader = self.data_interface.get_dataloader()
@@ -211,7 +211,7 @@ class Exp_PreTraining(object):
         """Save the parameters of SymTime time encoder in pre-training"""
         if self.process_index == 0:
             self.accelerator.print(
-                Fore.RED + "Now is saving the pretrained params" + Style.RESET_ALL,
+                Fore.RED + "Now is saving the pre-trained params" + Style.RESET_ALL,
                 end=" -> ",
             )
             save_name = f"{epoch}_{round(loss.item(), 4)}.pth"
