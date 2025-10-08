@@ -41,7 +41,7 @@ from S2Generator import SeriesParams, SymbolParams, Generator
 from typing import List, Optional, Any, Union
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--root_path", type=str, default="../data")
+parser.add_argument("--root_path", type=str)
 parser.add_argument("--start_seed", type=int, default=0)
 parser.add_argument("--end_seed", type=int, default=10)
 parser.add_argument("--max_input_dim", type=int, default=6)

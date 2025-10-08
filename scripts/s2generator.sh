@@ -1,5 +1,5 @@
 python -u data_provider/s2generator_main.py \ 
-  --root_path ./data/s2_data \ 
+  --root_path ./data/datasets/pretrain_data/ \
   --start_seed 0 \ 
   --end_seed 1e6 \ 
   --max_input_dim 6 \ 

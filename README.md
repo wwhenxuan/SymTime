@@ -4,13 +4,13 @@ This code is the official PyTorch implementation of our NeurIPS'25 paper: **Synt
 
 <div align="center">
 
-[![ICLR](https://img.shields.io/badge/NeurIPS'25-SymTime-orange)]() [![PyPI version](https://badge.fury.io/py/s2generator.svg)](https://pypi.org/project/s2generator/) [![Python](https://img.shields.io/badge/python-3.10+-blue?logo=python)](https://www.python.org/) [![PyTorch](https://img.shields.io/badge/PyTorch-2.0.1-blue)](https://pytorch.org/)
+[![NeurIPS](https://img.shields.io/badge/NeurIPS'25-SymTime-orange)]() [![PyPI version](https://badge.fury.io/py/s2generator.svg)](https://pypi.org/project/s2generator/) [![Python](https://img.shields.io/badge/python-3.10+-blue?logo=python)](https://www.python.org/) [![PyTorch](https://img.shields.io/badge/PyTorch-2.0.1-blue)](https://pytorch.org/)
 
 [Paper]() | [Quickstart](#Quickstart) | [Poster]() | [Blog]() | [Citation](#Citation)
 
 </div>
 
-## Introduction
+## ✨ Introduction
 
 Due to issues such as data privacy and acquisition difficulties, existing large-scale time series datasets face severe data shortages and imbalanced distribution compared to images and natural language. Foundation models pre-trained on these datasets will have certain prediction biases, reducing their generalization and robustness.
 
@@ -20,7 +20,7 @@ Inspired by complex dynamic system theories, we design a [series-symbol](https:/
     <img src="configs/images/S2Generator_SymTime.png" alt="SymTime" style="zoom:80%;" />
 </div>
 
-## Quickstart
+## 🧭 Quickstart
 
 ### Installation
 
@@ -32,7 +32,7 @@ pip install -r requirements.txt
 
 ### Data preparation
 
-
+SymTime在预训练阶段依赖于由[$S^2$Generator]()生成的大规模series-symbol双模态数据集
 
 Prepare Data. You can obtained the well pre-processed datasets from [OneDrive](https://1drv.ms/u/c/801ce36c4ff3f93b/EVTDLHyvegpEn_Oxa6ZiuFIBjTsKk6m9JldUqWDqvrVCnQ?e=P2T3Vc) or [BaiduCloud](https://pan.baidu.com/s/1W7UoAWKZjoukSZ74FTipYA?pwd=2255). (This may take some time, please wait patiently.) Then place the downloaded data under the folder `./dataset`. 
 
@@ -49,7 +49,7 @@ sh ./scripts/multivariate_detection/detect_score/MSL_script/CATCH.sh
 
 
 
-## Results
+## 📊 Results
 
 ### Main Results
 
@@ -71,7 +71,7 @@ Extensive experiments on 10 real-world datasets and 12 synthetic datasets demons
 If you want to test all baseline models, please refer to the Time Series Anomaly Detection Benchmark [TAB](https://github.com/decisionintelligence/TAB):
 
 
-## Citation
+## 🎓 Citation
 
 If you find this repo useful, please cite our paper.
 
@@ -81,7 +81,7 @@ If you find this repo useful, please cite our paper.
 ```
 
 
-## Contact
+## 🤗 Contact
 
 
 
