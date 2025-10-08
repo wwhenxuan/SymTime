@@ -14,9 +14,7 @@ This code is the official PyTorch implementation of our NeurIPS'25 paper: **Synt
 
 Due to issues such as data privacy and acquisition difficulties, existing large-scale time series datasets face severe data shortages and imbalanced distribution compared to images and natural language. Foundation models pre-trained on these datasets will have certain prediction biases, reducing their generalization and robustness.
 
-[//]: # (为了缓解上述问题，我们认为时间序列是复杂动力系统的外在表征，从而提出了一种双模态数据生成机制[`$S^2$Generator`]&#40;https://github.com/wwhenxuan/S2Generator&#41;。该方法通过无限制构造大量的复杂系统，我们能够无限制生成具有多种表征形式的时间序列-符号双模态数据。基于合成的大规模双模态数据集，我们通过掩码建模和对比学习)
-
-Inspired by complex dynamic system theories, we design [a series-symbol ($S^2$) data generation mechanism](https://github.com/wwhenxuan/S2Generator), enabling the unrestricted creation of high-quality time series data paired with corresponding symbolic expressions. To leverage series-symbol data pairs with strong correlations, we develop **SymTime**, a pre-trained foundation model for enhancing time series representation using symbolic information. **SymTime** demonstrates competitive performance across five major TSA tasks when fine-tunes with downstream tasks, rivaling foundation models pre-trained on real-world datasets.
+Inspired by complex dynamic system theories, we design a [series-symbol](https://github.com/wwhenxuan/S2Generator) data generation mechanism, enabling the unrestricted creation of high-quality time series data paired with corresponding symbolic expressions. To leverage series-symbol data pairs with strong correlations, we develop **SymTime**, a pre-trained foundation model for enhancing time series representation using symbolic information, which demonstrates competitive performance across five major TSA tasks, rivaling foundation models pre-trained on real-world datasets.
 
 <div style="text-align: center;">
     <img src="configs/images/S2Generator_SymTime.png" alt="SymTime" style="zoom:80%;" />
