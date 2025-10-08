@@ -48,7 +48,7 @@ Once you have generated enough time series data using [`S2Generator`](https://gi
 bash ./scripts/SymTime_pretrain.sh
 ```
 
-If you want to skip the time-consuming pre-training phase, you can directly download our pre-trained model parameters from [Releases](https://github.com/wwhenxuan/SymTime/releases) or [OneDrive](https://drive.google.com/drive/folders/1ACYD_RxQMPZ4DzHDdB3xkRHCkE8FcdH2?usp=sharing) and put them under `./models/params/` for fine-tuning on downstream tasks:
+If you want to skip the time-consuming pre-training phase, you can directly download our pre-trained model parameters from [OneDrive](https://drive.google.com/drive/folders/1of5P-Cy-dve9zs09p_Gr_wHh8Z_hfRN_?usp=sharing) or [BaiduCloud](https://pan.baidu.com/s/1gj44jULMdtCBLC_BwRrqVA?pwd=6666) and put them under `./models/params/` for fine-tuning on downstream tasks:
 
 ```shell
 # Long-term time series forecasting
