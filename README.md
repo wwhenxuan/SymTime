@@ -130,6 +130,6 @@ We appreciate the following GitHub repos a lot for their valuable code and effor
 
 If you have any questions or are interested in our view on the complex dynamics of time series, feel free to contact:
 
-- [Whenxuan Wang]() (whenxuanwang@stu.xidian.edu.cn)
+- [Whenxuan Wang](https://wwhenxuan.github.io/) (whenxuanwang@stu.xidian.edu.cn)
 - [Kai Wu](https://sparsel.github.io/index.html) (kwu@xidian.edu.cn)
 - [Dan Wang](https://web.xidian.edu.cn/danwang/) (danwang@xidian.edu.cn)
