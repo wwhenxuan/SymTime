@@ -66,11 +66,17 @@ bash ./scripts/anomaly_detection/MSL.sh
 
 ### Main Results
 
+Compared with other models for general time series analysis tasks, 
+SymTime, which has been pre-trained with mask modeling and cross-modal contrastive learning, 
+can achieve SOTA results in fine-tuning of downstream tasks and has lower model complexity.
+
 <div style="text-align: center;">
     <img src="configs/images/main_results.png" alt="main" style="zoom:80%;" />
 </div>
 
 ### Benchmark Results
+
+我们更详细的展示了在`TimesNet` benchmark中的实验结果，相比于目前较为先进的模型，SymTime仍能够取得较好的实验结果。
 
 <div style="text-align: center;">
     <img src="configs/images/finetune_benchmark_results.png" alt="benchmark" style="zoom:80%;" />
@@ -78,10 +84,24 @@ bash ./scripts/anomaly_detection/MSL.sh
 
 ### Dataset and Representation Learning
 
+We generate a large amount of series-symbol bimodal data using [`S2Generator`](https://github.com/wwhenxuan/S2Generator) for pre-training of mask modeling and contrastive learning. 
+Therefore, we first verify the representation coverage of the synthetic data compared with real-world time series dataset.
+
+<div style="text-align: center;">
+    <img src="configs/images/coverage.png" alt="coverage" style="zoom:80%;" />
+</div>
+
+Then we visualize the changes in the representation space of time series encoder (a)(b) and symbolic expression encoder (c)(d) in SymTime before and after pre-training. 
+The paired time series and symbolic expressions form distinct clustering features, demonstrating the effectiveness of our pre-training paradigm.
+
+<div style="text-align: center;">
+    <img src="configs/images/representation.png" alt="representation" style="zoom:80%;" />
+</div>
+
 
 ## 🎓 Citation
 
-If you find this repo useful, please cite our paper.
+If you find this code useful, please cite our paper.
 
 ```
 @misc{wang2025mitigatingdatascarcitytime,
@@ -94,6 +114,5 @@ If you find this repo useful, please cite our paper.
       url={https://arxiv.org/abs/2502.15466}, 
 }
 ```
-
 
 ## 🤗 Contact
