@@ -6,7 +6,7 @@ This code is the official PyTorch implementation of our NeurIPS'25 paper: **Synt
 
 [![NeurIPS](https://img.shields.io/badge/NeurIPS'25-SymTime-orange)]() [![PyPI version](https://badge.fury.io/py/s2generator.svg)](https://pypi.org/project/s2generator/) [![Python](https://img.shields.io/badge/python-3.10+-blue?logo=python)](https://www.python.org/) [![PyTorch](https://img.shields.io/badge/PyTorch-2.0.1-blue)](https://pytorch.org/)
 
-[Paper](https://arxiv.org/abs/2502.15466) | [Poster]() | [Blog]() | [Video]() | [Citation](#Citation)
+[Paper](https://arxiv.org/abs/2502.15466) | [Poster](https://github.com/wwhenxuan/wwhenxuan.github.io/blob/main/assets/img/poster_neurips_2025_115260_synthetic_series-symbol_data_generation.jpg) | [Blog]() | [Video]() | [Citation](#Citation)
 
 </div>
 
@@ -105,14 +105,14 @@ Then, we visualize the representation space of time series encoder (a)(b) and sy
 If you find this code useful, please cite our paper.
 
 ```
-@misc{wang2025mitigatingdatascarcitytime,
-      title={Mitigating Data Scarcity in Time Series Analysis: A Foundation Model with Series-Symbol Data Generation}, 
-      author={Wenxuan Wang and Kai Wu and Yujian Betterest Li and Dan Wang and Xiaoyu Zhang and Jing Liu},
+@misc{wang2025syntheticseriessymboldatageneration,
+      title={Synthetic Series-Symbol Data Generation for Time Series Foundation Models}, 
+      author={Wenxuan Wang and Kai Wu and Yujian Betterest Li and Dan Wang and Xiaoyu Zhang},
       year={2025},
-      eprint={2502.15466},
+      eprint={2510.08445},
       archivePrefix={arXiv},
       primaryClass={cs.LG},
-      url={https://arxiv.org/abs/2502.15466}, 
+      url={https://arxiv.org/abs/2510.08445}, 
 }
 ```
 
