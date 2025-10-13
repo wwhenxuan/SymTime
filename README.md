@@ -6,7 +6,7 @@ This code is the official PyTorch implementation of our NeurIPS'25 paper: **Synt
 
 [![NeurIPS](https://img.shields.io/badge/NeurIPS'25-SymTime-orange)]() [![PyPI version](https://badge.fury.io/py/s2generator.svg)](https://pypi.org/project/s2generator/) [![Python](https://img.shields.io/badge/python-3.10+-blue?logo=python)](https://www.python.org/) [![PyTorch](https://img.shields.io/badge/PyTorch-2.0.1-blue)](https://pytorch.org/)
 
-[Paper](https://arxiv.org/abs/2502.15466) | [Poster](https://github.com/wwhenxuan/wwhenxuan.github.io/blob/main/assets/img/poster_neurips_2025_115260_synthetic_series-symbol_data_generation.jpg) | [Blog]() | [Video]() | [Citation](#Citation)
+[Paper](https://arxiv.org/abs/2510.08445) | [Poster](https://github.com/wwhenxuan/wwhenxuan.github.io/blob/main/assets/img/poster_neurips_2025_115260_synthetic_series-symbol_data_generation.jpg) | [Blog]() | [Video]() | [Citation](#Citation)
 
 </div>
 
