@@ -4,7 +4,7 @@ This code is the official PyTorch implementation of our NeurIPS'25 paper: **Synt
 
 <div align="center">
 
-[![NeurIPS](https://img.shields.io/badge/NeurIPS'25-SymTime-orange)]() [![PyPI version](https://badge.fury.io/py/s2generator.svg)](https://pypi.org/project/s2generator/) [![Python](https://img.shields.io/badge/python-3.10+-blue?logo=python)](https://www.python.org/) [![PyTorch](https://img.shields.io/badge/PyTorch-2.0.1-blue)](https://pytorch.org/)
+[![NeurIPS](https://img.shields.io/badge/NeurIPS'25-SymTime-orange)](https://neurips.cc/virtual/2025/poster/115260) [![PyPI version](https://badge.fury.io/py/s2generator.svg)](https://pypi.org/project/s2generator/) [![Python](https://img.shields.io/badge/python-3.10+-blue?logo=python)](https://www.python.org/) [![PyTorch](https://img.shields.io/badge/PyTorch-2.0.1-blue)](https://pytorch.org/)
 
 [Paper](https://arxiv.org/abs/2510.08445) | [Poster](https://github.com/wwhenxuan/wwhenxuan.github.io/blob/main/assets/img/poster_neurips_2025_115260_synthetic_series-symbol_data_generation.jpg) | [Blog]() | [Video]() | [Citation](#Citation)
 
@@ -124,7 +124,7 @@ We appreciate the following GitHub repos a lot for their valuable code and effor
 - PySDKit (https://github.com/wwhenxuan/PySDKit);
 - ALBEF (https://github.com/salesforce/ALBEF);
 - PatchTST (https://github.com/yuqinie98/PatchTST);
-- Short-term Forecasting: https://github.com/ServiceNow/N-BEATS.
+- Short-term Forecasting: (https://github.com/ServiceNow/N-BEATS).
 
 ## 🤗 Contact
 
