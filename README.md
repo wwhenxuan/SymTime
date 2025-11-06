@@ -6,7 +6,7 @@ This code is the official PyTorch implementation of our NeurIPS'25 paper: **Synt
 
 [![NeurIPS](https://img.shields.io/badge/NeurIPS'25-SymTime-orange)](https://neurips.cc/virtual/2025/poster/115260) [![PyPI version](https://badge.fury.io/py/s2generator.svg)](https://pypi.org/project/s2generator/) [![Python](https://img.shields.io/badge/python-3.10+-blue?logo=python)](https://www.python.org/) [![PyTorch](https://img.shields.io/badge/PyTorch-2.0.1-blue)](https://pytorch.org/)
 
-[Paper](https://arxiv.org/abs/2510.08445) | [Poster](https://github.com/wwhenxuan/wwhenxuan.github.io/blob/main/assets/img/poster_neurips_2025_115260_synthetic_series-symbol_data_generation.jpg) | [Blog](https://mp.weixin.qq.com/s/D6O5SBl2RYHdkiinV6UM8w) | [Video](https://www.bilibili.com/video/BV1RT4QzXECt/?spm_id_from=333.337.search-card.all.click) | [Citation](#Citation)
+[Paper](https://arxiv.org/abs/2510.08445) | [Poster](https://github.com/wwhenxuan/wwhenxuan.github.io/blob/main/assets/img/poster_neurips_2025_115260_synthetic_series-symbol_data_generation.jpg) | [Blog](https://mp.weixin.qq.com/s/D6O5SBl2RYHdkiinV6UM8w) | [Video](https://www.bilibili.com/video/BV1RT4QzXECt/?spm_id_from=333.337.search-card.all.click) | [PPT](https://github.com/wwhenxuan/wwhenxuan.github.io/blob/main/assets/files/NeurIPS_2025_SymTime_video_en.pptx) | [Citation](#Citation)
 
 </div>
 
