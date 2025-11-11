@@ -235,37 +235,6 @@ class SymTime(nn.Module):
     def imputation(self, x_enc: torch.Tensor) -> torch.Tensor:
         """The interface for performing time series imputation tasks"""
 
-        #  pre-interpolation from Peri-midFormer
-        x_enc_np = x_enc.detach().cpu().numpy()
-        zero_indices = np.where(x_enc_np[:, :, :] == 0)
-        interpolated_x_enc = np.copy(x_enc_np)
-        for sample_idx, time_idx, channel_idx in zip(*zero_indices):
-            non_zero_indices = np.nonzero(x_enc_np[sample_idx, :, channel_idx])[0]
-            before_non_zero_idx = (
-                non_zero_indices[non_zero_indices < time_idx][-1]
-                if len(non_zero_indices[non_zero_indices < time_idx]) > 0
-                else None
-            )
-            after_non_zero_idx = (
-                non_zero_indices[non_zero_indices > time_idx][0]
-                if len(non_zero_indices[non_zero_indices > time_idx]) > 0
-                else None
-            )
-            if before_non_zero_idx is not None and after_non_zero_idx is not None:
-                interpolated_value = (
-                    x_enc_np[sample_idx, before_non_zero_idx, channel_idx]
-                    + x_enc_np[sample_idx, after_non_zero_idx, channel_idx]
-                ) / 2
-            elif before_non_zero_idx is None:
-                interpolated_value = x_enc_np[
-                    sample_idx, after_non_zero_idx, channel_idx
-                ]
-            elif after_non_zero_idx is None:
-                interpolated_value = x_enc_np[
-                    sample_idx, before_non_zero_idx, channel_idx
-                ]
-            interpolated_x_enc[sample_idx, time_idx, channel_idx] = interpolated_value
-
         # Normalization from Non-stationary Transformer
         means = x_enc.mean(1, keepdim=True).detach()
         x_enc = x_enc - means
